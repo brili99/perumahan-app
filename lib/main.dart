@@ -9,13 +9,13 @@ import 'package:path_provider/path_provider.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 // import 'Dashboard.dart';
 import 'package:get_storage/get_storage.dart';
-import 'Dashboardv2.dart';
+import 'Dashboardv4.dart';
 
 void main() async {
   await GetStorage.init('perumahan');
   final box = GetStorage();
   if (box.read('token') != null)
-    runApp(Dashboardv2());
+    runApp(init_Dashboardv4());
   else
     runApp(MyApp());
 }
@@ -29,22 +29,28 @@ class MyApp extends StatelessWidget {
 
   MyApp({Key? key}) : super(key: key);
 
-  static const String _title = 'Sample App';
+  static const String _title = 'Perumahan App';
   final box = GetStorage();
   @override
   Widget build(BuildContext context) {
     if (box.read('token') != null) {
       return MaterialApp(
         title: _title,
+        theme: ThemeData(
+          primaryColor: Colors.white,
+        ),
         home: Scaffold(
-          body: const Dashboardv2(),
+          body: init_Dashboardv4(),
         ),
       );
     } else {
       return MaterialApp(
         title: _title,
-        home: Scaffold(
-          body: const MyStatefulWidget(),
+        theme: ThemeData(
+          primaryColor: Colors.white,
+        ),
+        home: const Scaffold(
+          body: MyStatefulWidget(),
         ),
       );
     }
@@ -221,7 +227,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
         box.write('token', res["token"]);
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const Dashboardv2()),
+          MaterialPageRoute(builder: (context) => init_Dashboardv4()),
         );
       } else {
         //Wrong password
@@ -251,7 +257,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
       if (res == "success") {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const Dashboardv2()),
+          MaterialPageRoute(builder: (context) => init_Dashboardv4()),
         );
       } else {
         //Wrong password
@@ -281,7 +287,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
       if (res == "success") {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const Dashboardv2()),
+          MaterialPageRoute(builder: (context) => init_Dashboardv4()),
         );
       } else {
         //Wrong password

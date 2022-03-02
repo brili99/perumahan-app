@@ -181,6 +181,10 @@ class _Dashboardv2 extends State<Dashboardv2> {
                     builder: (BuildContext context, AsyncSnapshot snapshot) {
                       if (snapshot.connectionState == ConnectionState.done) {
                         var hasil = jsonDecode(snapshot.data);
+                        var nama = hasil['nama'];
+                        if (nama == null) {
+                          nama = "Relay 2";
+                        }
                         if (hasil['state'] == "1") {
                           vr2 = 1;
                           r2 = Icon(
@@ -230,7 +234,7 @@ class _Dashboardv2 extends State<Dashboardv2> {
                                     Center(child: r2),
                                     SizedBox(height: 20.0),
                                     Center(
-                                      child: Text("Relay 2",
+                                      child: Text(nama,
                                           style: TextStyle(
                                               fontSize: 18.0,
                                               color: Colors.black)),
