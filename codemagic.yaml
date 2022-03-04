@@ -3,7 +3,7 @@ workflows:
     scripts:
       - name: Build ipa for distribution
         script: xcode-project build-ipa \
-                    --workspace "${XCODE_WORKSPACE?}" \
+                    --workspace "ios\Runner.xcodeproj" \
                     --scheme "${XCODE_SCHEME?}"
     artifacts:
       - build/ios/ipa/*.ipa
