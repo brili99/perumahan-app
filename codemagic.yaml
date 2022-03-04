@@ -1,16 +1,9 @@
 workflows:
   my-workflow:
-    instance_type: mac_pro
-    environment:
-      flutter: beta
-      xcode: 12.5
     scripts:
-      - name: Run iOS tests
-        script: |
-          set -e # exit on first failed command
-
-          xcode-project run-tests \
-              --workspace ${XCODE_WORKSPACE?} \
-              --scheme ${XCODE_SCHEME?} \
-              --device "iPhone 12"
-        test_report: build/ios/test/*.xml
+      - name: Build ipa for distribution
+        script: xcode-project build-ipa \
+                    --workspace "${XCODE_WORKSPACE?}" \
+                    --scheme "${XCODE_SCHEME?}"
+    artifacts:
+      - build/ios/ipa/*.ipa
