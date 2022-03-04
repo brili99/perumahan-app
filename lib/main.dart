@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 // ignore: import_of_legacy_library_into_null_safe
-import 'package:barcode_scan/barcode_scan.dart';
+// import 'package:barcode_scan/barcode_scan.dart';
+import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
@@ -10,6 +11,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 // import 'Dashboard.dart';
 import 'package:get_storage/get_storage.dart';
 import 'Dashboardv4.dart';
+import 'QRViewExample.dart';
 
 void main() async {
   await GetStorage.init('perumahan');
@@ -84,8 +86,8 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
     //   );
     // }
 
-    var screenSize = MediaQuery.of(context).size;
-    double maxWidth = screenSize.width > 500 ? 500 : screenSize.width;
+    // var screenSize = MediaQuery.of(context).size;
+    // double maxWidth = screenSize.width > 500 ? 500 : screenSize.width;
     return Padding(
         padding: const EdgeInsets.all(10),
         child: ListView(
@@ -168,33 +170,41 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                         primary: Color.fromRGBO(254, 233, 44, 1),
                         onPrimary: Colors.black),
                     child: const Text('Scan with QR'),
-                    onPressed: () async {
-                      //scan qr
-                      if (defaultTargetPlatform == TargetPlatform.iOS ||
-                          defaultTargetPlatform == TargetPlatform.android) {
-                        try {
-                          ScanResult qrScanResult = await BarcodeScanner.scan();
-                          String qrResult = qrScanResult.rawContent;
-                          // String barcode = (await BarcodeScanner.scan()) as String;
-                          // print(barcode);
-                          dologinQR(qrResult);
-                          setState(() {
-                            box.write('token', qrResult);
-                            barcode = qrResult;
-                          });
-                        } on PlatformException catch (error) {
-                          if (error.code == BarcodeScanner.cameraAccessDenied) {
-                            setState(() {
-                              barcode =
-                                  'Izin kamera tidak diizinkan oleh si pengguna';
-                            });
-                          } else {
-                            setState(() {
-                              barcode = 'Error: $error';
-                            });
-                          }
-                        }
-                      }
+                    // Old qr scan
+                    // onPressed: () async {
+                    //   //scan qr
+                    //   if (defaultTargetPlatform == TargetPlatform.iOS ||
+                    //       defaultTargetPlatform == TargetPlatform.android) {
+                    //     try {
+                    //       ScanResult qrScanResult = await BarcodeScanner.scan();
+                    //       String qrResult = qrScanResult.rawContent;
+                    //       // String barcode = (await BarcodeScanner.scan()) as String;
+                    //       // print(barcode);
+                    //       dologinQR(qrResult);
+                    //       setState(() {
+                    //         box.write('token', qrResult);
+                    //         barcode = qrResult;
+                    //       });
+                    //     } on PlatformException catch (error) {
+                    //       if (error.code == BarcodeScanner.cameraAccessDenied) {
+                    //         setState(() {
+                    //           barcode =
+                    //               'Izin kamera tidak diizinkan oleh si pengguna';
+                    //         });
+                    //       } else {
+                    //         setState(() {
+                    //           barcode = 'Error: $error';
+                    //         });
+                    //       }
+                    //     }
+                    //   }
+                    // },
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => QRViewExample()),
+                      );
                     },
                   )),
             Text(
@@ -271,36 +281,6 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
       print(res);
       if (res["msg"] == "success") {
         box.write('token', res["token"]);
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => init_Dashboardv4()),
-        );
-      } else {
-        //Wrong password
-      }
-      // if (statusCode < 200 || statusCode >= 400 || json == null) {
-      //   print(jsonDecode(response.body)["message"]);
-      // }
-      // return response.body;
-    });
-    return res;
-  }
-
-  Future<dynamic> changeRelay(String token, String sw) async {
-    var res;
-    await http
-        .post(
-      Uri.parse('https://iot.tigamas.com/api/app/loginQR'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode(<String, String>{'token': token, 'switch': sw}),
-    )
-        .then((http.Response response) {
-      // final int statusCode = response.statusCode;
-      // print("====response ${response.body.toString()}");
-      res = jsonDecode(response.body)["msg"];
-      if (res == "success") {
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => init_Dashboardv4()),
