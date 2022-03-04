@@ -267,10 +267,10 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
         .then((http.Response response) {
       // final int statusCode = response.statusCode;
       // print("====response ${response.body.toString()}");
-      res = jsonDecode(response.body)["msg"];
+      res = jsonDecode(response.body);
       print(res);
-      if (res == "success") {
-        // box.write('token', res["token"]);
+      if (res["msg"] == "success") {
+        box.write('token', res["token"]);
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => init_Dashboardv4()),
