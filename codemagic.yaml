@@ -3,8 +3,8 @@ workflows:
     scripts:
       - name: Build ipa for distribution
         script: xcode-project build-ipa \
-                    --workspace "ios/Runner.xcodeproj" \
-                    --project "ios/Runner.xcworkspace" \
+                    --workspace "ios/Runner.xcworkspace" \
+                    --project "ios/Runner.xcodeproj" \
                     --scheme "perumahan-app-test"
     artifacts:
       - build/ios/ipa/*.ipa
