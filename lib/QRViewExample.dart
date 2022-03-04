@@ -56,7 +56,7 @@ class _QRViewExampleState extends State<QRViewExample> {
           context,
           MaterialPageRoute(builder: (context) => init_Dashboardv4()),
         );
-        print("doLogin");
+        // print("doLogin");
       } else {
         //Wrong password
       }
