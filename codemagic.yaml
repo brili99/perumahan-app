@@ -2,9 +2,6 @@ workflows:
   my-workflow:
     scripts:
       - name: Build ipa for distribution
-        script: xcode-project build-ipa \
-                    --workspace "Runner.xcworkspace" \
-                    --project "Runner.xcodeproj" \
-                    --scheme "perumahan-app-test"
+        script: flutter build ipa
     artifacts:
       - build/ios/ipa/*.ipa
