@@ -83,6 +83,9 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
     //     MaterialPageRoute(builder: (context) => Dashboard()),
     //   );
     // }
+
+    var screenSize = MediaQuery.of(context).size;
+    double maxWidth = screenSize.width > 500 ? 500 : screenSize.width;
     return Padding(
         padding: const EdgeInsets.all(10),
         child: ListView(
@@ -93,7 +96,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                 child: const Text(
                   'Perumahan Tiga Mas',
                   style: TextStyle(
-                      color: Colors.blue,
+                      color: Color.fromRGBO(254, 211, 44, 1),
                       fontWeight: FontWeight.w500,
                       fontSize: 30),
                 )),
@@ -126,6 +129,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
               ),
             ),
             TextButton(
+              style: ElevatedButton.styleFrom(onPrimary: Colors.black),
               onPressed: () {
                 //forgot password screen
                 Navigator.push(
@@ -139,8 +143,12 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
             Container(
                 margin: const EdgeInsets.only(top: 20.0),
                 height: 50,
+                // width: screenSize.width > 200 ? 500 : screenSize.width,
                 padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                 child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      primary: Color.fromRGBO(254, 233, 44, 1),
+                      onPrimary: Colors.black),
                   child: const Text('Login'),
                   onPressed: () {
                     // print(nameController.text);
@@ -149,40 +157,46 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                     dologin(nameController.text, passwordController.text);
                   },
                 )),
-            Container(
-                margin: const EdgeInsets.only(top: 20.0),
-                height: 50,
-                padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                child: ElevatedButton(
-                  child: const Text('Scan with QR'),
-                  onPressed: () async {
-                    //scan qr
-                    if (defaultTargetPlatform == TargetPlatform.iOS ||
-                        defaultTargetPlatform == TargetPlatform.android) {
-                      try {
-                        ScanResult qrScanResult = await BarcodeScanner.scan();
-                        String qrResult = qrScanResult.rawContent;
-                        // String barcode = (await BarcodeScanner.scan()) as String;
-                        // print(barcode);
-                        dologinQR(qrResult);
-                        setState(() {
-                          barcode = qrResult;
-                        });
-                      } on PlatformException catch (error) {
-                        if (error.code == BarcodeScanner.cameraAccessDenied) {
+            if (defaultTargetPlatform == TargetPlatform.iOS ||
+                defaultTargetPlatform == TargetPlatform.android)
+              Container(
+                  margin: const EdgeInsets.only(top: 20.0),
+                  height: 50,
+                  padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                        primary: Color.fromRGBO(254, 233, 44, 1),
+                        onPrimary: Colors.black),
+                    child: const Text('Scan with QR'),
+                    onPressed: () async {
+                      //scan qr
+                      if (defaultTargetPlatform == TargetPlatform.iOS ||
+                          defaultTargetPlatform == TargetPlatform.android) {
+                        try {
+                          ScanResult qrScanResult = await BarcodeScanner.scan();
+                          String qrResult = qrScanResult.rawContent;
+                          // String barcode = (await BarcodeScanner.scan()) as String;
+                          // print(barcode);
+                          dologinQR(qrResult);
                           setState(() {
-                            barcode =
-                                'Izin kamera tidak diizinkan oleh si pengguna';
+                            box.write('token', qrResult);
+                            barcode = qrResult;
                           });
-                        } else {
-                          setState(() {
-                            barcode = 'Error: $error';
-                          });
+                        } on PlatformException catch (error) {
+                          if (error.code == BarcodeScanner.cameraAccessDenied) {
+                            setState(() {
+                              barcode =
+                                  'Izin kamera tidak diizinkan oleh si pengguna';
+                            });
+                          } else {
+                            setState(() {
+                              barcode = 'Error: $error';
+                            });
+                          }
                         }
                       }
-                    }
-                  },
-                )),
+                    },
+                  )),
             Text(
               message,
               textAlign: TextAlign.center,
@@ -254,7 +268,9 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
       // final int statusCode = response.statusCode;
       // print("====response ${response.body.toString()}");
       res = jsonDecode(response.body)["msg"];
+      print(res);
       if (res == "success") {
+        // box.write('token', res["token"]);
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => init_Dashboardv4()),
