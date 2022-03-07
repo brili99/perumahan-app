@@ -2,6 +2,6 @@ workflows:
   my-workflow:
     scripts:
       - name: Build ipa for distribution
-        script: flutter build ipa --release
+        script: flutter build bundle --release
     artifacts:
       - build/ios/ipa/*.ipa
