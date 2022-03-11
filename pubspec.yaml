@@ -69,6 +69,8 @@ flutter:
     - assets/images/bg_dashboard2.jpg
     - assets/images/air-conditioner.svg
     - assets/images/lightning.svg
+    - assets/images/lamp.svg
+    - assets/images/tv.svg
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

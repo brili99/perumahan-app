@@ -14,8 +14,8 @@ import 'Dashboardv4.dart';
 import 'QRViewExample.dart';
 
 void main() async {
-  await GetStorage.init('perumahan');
-  final box = GetStorage();
+  await GetStorage.init();
+  GetStorage box = GetStorage();
   if (box.read('token') != null)
     runApp(init_Dashboardv4());
   else
@@ -32,30 +32,30 @@ class MyApp extends StatelessWidget {
   MyApp({Key? key}) : super(key: key);
 
   static const String _title = 'Perumahan App';
-  final box = GetStorage();
+  // final box = GetStorage();
   @override
   Widget build(BuildContext context) {
-    if (box.read('token') != null) {
-      return MaterialApp(
-        title: _title,
-        theme: ThemeData(
-          primaryColor: Colors.white,
-        ),
-        home: Scaffold(
-          body: init_Dashboardv4(),
-        ),
-      );
-    } else {
-      return MaterialApp(
-        title: _title,
-        theme: ThemeData(
-          primaryColor: Colors.white,
-        ),
-        home: const Scaffold(
-          body: MyStatefulWidget(),
-        ),
-      );
-    }
+    // if (box.read('token') != null) {
+    //   return MaterialApp(
+    //     title: _title,
+    //     theme: ThemeData(
+    //       primaryColor: Colors.white,
+    //     ),
+    //     home: Scaffold(
+    //       body: init_Dashboardv4(),
+    //     ),
+    //   );
+    // } else {
+    return MaterialApp(
+      title: _title,
+      theme: ThemeData(
+        primaryColor: Colors.white,
+      ),
+      home: const Scaffold(
+        body: MyStatefulWidget(),
+      ),
+    );
+    // }
   }
 }
 
@@ -79,6 +79,8 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
 
   @override
   Widget build(BuildContext context) {
+    String token = box.read('token').toString();
+    // print("token: " + token);
     // if (box.read('token') != null) {
     //   Navigator.push(
     //     context,
