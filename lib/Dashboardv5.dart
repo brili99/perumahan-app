@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:flutter_launcher_icons/android.dart';
 import 'package:flutter_launcher_icons/constants.dart';
@@ -18,7 +19,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'main.dart';
 
-class init_Dashboardv4 extends StatelessWidget {
+class init_Dashboardv5 extends StatelessWidget {
   // final box = GetStorage();
   // String token = "";
 
@@ -31,40 +32,99 @@ class init_Dashboardv4 extends StatelessWidget {
         primaryColor: Colors.white,
       ),
       home: const Scaffold(
-        body: Dashboardv4(),
+        body: Dashboardv5(),
       ),
     );
   }
 }
 
-class Dashboardv4 extends StatefulWidget {
+class Dashboardv5 extends StatefulWidget {
   // const Dashboardv2({Key? key}) : super(key: key);
-  const Dashboardv4();
+  const Dashboardv5();
   @override
-  State<Dashboardv4> createState() => _Dashboardv4();
+  State<Dashboardv5> createState() => _Dashboardv5();
 }
 
-class _Dashboardv4 extends State<Dashboardv4> {
+class _Dashboardv5 extends State<Dashboardv5> {
   final box = GetStorage();
   // String token = "";
 
-  var vr1 = 0;
-  var vr2 = 0;
-  var vr3 = 0;
-  var vr4 = 0;
-  var vr5 = 0;
-  var vr6 = 0;
-  var vr7 = 0;
-  var vr8 = 0;
+  // var vr1 = 99;
+  // var vr2 = 99;
+  // var vr3 = 99;
+  // var vr4 = 99;
+  // var vr5 = 99;
+  // var vr6 = 99;
+  // var vr7 = 99;
+  // var vr8 = 99;
 
-  var nr1 = "Relay 1";
-  var nr2 = "Relay 2";
-  var nr3 = "Relay 3";
-  var nr4 = "Relay 4";
-  var nr5 = "Relay 5";
-  var nr6 = "Relay 6";
-  var nr7 = "Relay 7";
-  var nr8 = "Relay 8";
+  var rVal = [99, 99, 99, 99, 99, 99, 99, 99];
+  getTampilanVar(int rel, String pathIcon, Color colorIcon, String labelBtn) {
+    // log(rVal[0].toString() +
+    //     " " +
+    //     rVal[1].toString() +
+    //     " " +
+    //     rVal[2].toString() +
+    //     " " +
+    //     rVal[3].toString() +
+    //     " " +
+    //     rVal[4].toString() +
+    //     " " +
+    //     rVal[5].toString() +
+    //     " " +
+    //     rVal[6].toString() +
+    //     " " +
+    //     rVal[7].toString());
+    if (rVal[rel - 1] != 99) {
+      return InkWell(
+        customBorder: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(40),
+        ),
+        onTap: () {},
+        child: Card(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(40.0),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    height: 59,
+                    width: 59,
+                    child: SvgPicture.asset(
+                      pathIcon,
+                      color: rVal[rel - 1] == 1 ? colorIcon : Colors.black,
+                    ),
+                  ),
+                  const SizedBox(height: 5.0),
+                  Center(
+                    child: Text(labelBtn,
+                        style: const TextStyle(
+                            fontSize: 20.0, color: Colors.black)),
+                  )
+                ],
+              ),
+              const SizedBox(
+                width: 20,
+              ),
+              Icon(
+                FontAwesomeIcons.powerOff,
+                size: 30.0,
+                color: rVal[rel - 1] == 1 ? Colors.red : Colors.black,
+              )
+            ],
+          ),
+        ),
+      );
+    } else {
+      return const Center(child: CircularProgressIndicator());
+    }
+  }
 
   getStateRelay(String token, String relay) async {
     var response = await http.post(
@@ -151,6 +211,23 @@ class _Dashboardv4 extends State<Dashboardv4> {
     // });
     String token = box.read('token').toString();
     // print("token: " + token);
+
+    // debugPrint(rVal[0].toString() +
+    //     " " +
+    //     rVal[1].toString() +
+    //     " " +
+    //     rVal[2].toString() +
+    //     " " +
+    //     rVal[3].toString() +
+    //     " " +
+    //     rVal[4].toString() +
+    //     " " +
+    //     rVal[5].toString() +
+    //     " " +
+    //     rVal[6].toString() +
+    //     " " +
+    //     rVal[7].toString());
+
     return Container(
       child: ListView(
         children: [
@@ -203,10 +280,15 @@ class _Dashboardv4 extends State<Dashboardv4> {
                   future: getStateRelay(token, "1"),
                   builder: (BuildContext context, AsyncSnapshot snapshot) {
                     if (snapshot.connectionState == ConnectionState.done) {
+                      if (snapshot.data == null) {
+                        return Text("Ada yang salah, cek internet anda");
+                      }
                       var hasil = jsonDecode(snapshot.data);
                       if (hasil.toString() == "[]") {
                         return Text("Invalid token");
                       }
+                      rVal[int.parse(hasil['relay']) - 1] =
+                          int.parse(hasil['state']);
                       return InkWell(
                         customBorder: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(40),
@@ -263,7 +345,8 @@ class _Dashboardv4 extends State<Dashboardv4> {
                         ),
                       );
                     } else {
-                      return const Center(child: CircularProgressIndicator());
+                      return getTampilanVar(
+                          1, getIcon("lamp"), Colors.amber, "Lampu 1");
                     }
                   },
                 ),
@@ -275,6 +358,8 @@ class _Dashboardv4 extends State<Dashboardv4> {
                       if (hasil.toString() == "[]") {
                         return Text("Invalid token");
                       }
+                      rVal[int.parse(hasil['relay']) - 1] =
+                          int.parse(hasil['state']);
                       return InkWell(
                         customBorder: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(40),
@@ -331,7 +416,8 @@ class _Dashboardv4 extends State<Dashboardv4> {
                         ),
                       );
                     } else {
-                      return const Center(child: CircularProgressIndicator());
+                      return getTampilanVar(2, getIcon("ac"),
+                          Color.fromRGBO(76, 133, 186, 1), "AC 1");
                     }
                   },
                 ),
@@ -343,6 +429,8 @@ class _Dashboardv4 extends State<Dashboardv4> {
                       if (hasil.toString() == "[]") {
                         return Text("Invalid token");
                       }
+                      rVal[int.parse(hasil['relay']) - 1] =
+                          int.parse(hasil['state']);
                       return InkWell(
                         customBorder: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(40),
@@ -399,7 +487,8 @@ class _Dashboardv4 extends State<Dashboardv4> {
                         ),
                       );
                     } else {
-                      return const Center(child: CircularProgressIndicator());
+                      return getTampilanVar(3, getIcon("tv"),
+                          Color.fromRGBO(184, 26, 183, 1), "TV 1");
                     }
                   },
                 ),
@@ -411,6 +500,8 @@ class _Dashboardv4 extends State<Dashboardv4> {
                       if (hasil.toString() == "[]") {
                         return Text("Invalid token");
                       }
+                      rVal[int.parse(hasil['relay']) - 1] =
+                          int.parse(hasil['state']);
                       return InkWell(
                         customBorder: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(40),
@@ -467,7 +558,8 @@ class _Dashboardv4 extends State<Dashboardv4> {
                         ),
                       );
                     } else {
-                      return const Center(child: CircularProgressIndicator());
+                      return getTampilanVar(
+                          4, getIcon("lamp"), Colors.amber, "Lampu 2");
                     }
                   },
                 ),
@@ -495,6 +587,8 @@ class _Dashboardv4 extends State<Dashboardv4> {
                       if (hasil.toString() == "[]") {
                         return Text("Invalid token");
                       }
+                      rVal[int.parse(hasil['relay']) - 1] =
+                          int.parse(hasil['state']);
                       return InkWell(
                         customBorder: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(40),
@@ -551,7 +645,8 @@ class _Dashboardv4 extends State<Dashboardv4> {
                         ),
                       );
                     } else {
-                      return const Center(child: CircularProgressIndicator());
+                      return getTampilanVar(
+                          5, getIcon("lamp"), Colors.amber, "Lampu 3");
                     }
                   },
                 ),
@@ -563,6 +658,8 @@ class _Dashboardv4 extends State<Dashboardv4> {
                       if (hasil.toString() == "[]") {
                         return Text("Invalid token");
                       }
+                      rVal[int.parse(hasil['relay']) - 1] =
+                          int.parse(hasil['state']);
                       return InkWell(
                         customBorder: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(40),
@@ -619,7 +716,8 @@ class _Dashboardv4 extends State<Dashboardv4> {
                         ),
                       );
                     } else {
-                      return const Center(child: CircularProgressIndicator());
+                      return getTampilanVar(
+                          6, getIcon("lamp"), Colors.amber, "Lampu 4");
                     }
                   },
                 ),
@@ -631,6 +729,8 @@ class _Dashboardv4 extends State<Dashboardv4> {
                       if (hasil.toString() == "[]") {
                         return Text("Invalid token");
                       }
+                      rVal[int.parse(hasil['relay']) - 1] =
+                          int.parse(hasil['state']);
                       return InkWell(
                         customBorder: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(40),
@@ -687,7 +787,8 @@ class _Dashboardv4 extends State<Dashboardv4> {
                         ),
                       );
                     } else {
-                      return const Center(child: CircularProgressIndicator());
+                      return getTampilanVar(7, getIcon("ac"),
+                          Color.fromRGBO(76, 133, 186, 1), "AC 2");
                     }
                   },
                 ),
@@ -699,6 +800,8 @@ class _Dashboardv4 extends State<Dashboardv4> {
                       if (hasil.toString() == "[]") {
                         return Text("Invalid token");
                       }
+                      rVal[int.parse(hasil['relay']) - 1] =
+                          int.parse(hasil['state']);
                       return InkWell(
                         customBorder: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(40),
@@ -756,7 +859,8 @@ class _Dashboardv4 extends State<Dashboardv4> {
                         ),
                       );
                     } else {
-                      return const Center(child: CircularProgressIndicator());
+                      return getTampilanVar(8, getIcon("tv"),
+                          const Color.fromRGBO(184, 26, 183, 1), "TV 2");
                     }
                   },
                 ),
