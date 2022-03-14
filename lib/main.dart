@@ -1,3 +1,13 @@
+import 'package:flutter_launcher_icons/android.dart';
+import 'package:flutter_launcher_icons/constants.dart';
+import 'package:flutter_launcher_icons/custom_exceptions.dart';
+import 'package:flutter_launcher_icons/ios.dart';
+import 'package:flutter_launcher_icons/main.dart';
+import 'package:flutter_launcher_icons/utils.dart';
+import 'package:flutter_launcher_icons/xml_templates.dart';
+
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -12,6 +22,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_storage/get_storage.dart';
 import 'Dashboardv4.dart';
 import 'QRViewExample.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 void main() async {
   await GetStorage.init();
@@ -323,6 +334,34 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
 class ForgotPassword extends StatelessWidget {
   const ForgotPassword({Key? key}) : super(key: key);
 
+  // openwhatsapp() async {
+  //   var whatsapp = "+919144040888";
+  //   var whatsappURl_android =
+  //       "whatsapp://send?phone=" + whatsapp + "&text=hello";
+  //   var whatappURL_ios = "https://wa.me/$whatsapp?text=${Uri.parse("hello")}";
+  //   if (Platform.isIOS) {
+  //     // for iOS phone only
+  //     if (await canLaunch(whatappURL_ios)) {
+  //       await launch(whatappURL_ios, forceSafariVC: false);
+  //     } else {
+  //       ScaffoldMessenger.of(context)
+  //           .showSnackBar(SnackBar(content: new Text("whatsapp no installed")));
+  //     }
+  //   } else {
+  //     // android , web
+  //     if (await canLaunch(whatsappURl_android)) {
+  //       await launch(whatsappURl_android);
+  //     } else {
+  //       ScaffoldMessenger.of(context)
+  //           .showSnackBar(SnackBar(content: new Text("whatsapp no installed")));
+  //     }
+  //   }
+  // }
+
+  _launchURL(var _url) async {
+    if (!await launch(_url)) throw 'Could not launch $_url';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -333,8 +372,11 @@ class ForgotPassword extends StatelessWidget {
         child: ElevatedButton(
           onPressed: () {
             // Navigate back to first route when tapped.
+            const url = "https://wa.me/+628987295940?text=Saya lupa password";
+            var encoded = Uri.encodeFull(url);
+            _launchURL(encoded);
           },
-          child: const Text('Go back!'),
+          child: const Text('Hubungi admin dengan Whatsapp'),
         ),
       ),
     );

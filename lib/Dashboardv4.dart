@@ -1,10 +1,20 @@
+import 'package:flutter_launcher_icons/android.dart';
+import 'package:flutter_launcher_icons/constants.dart';
+import 'package:flutter_launcher_icons/custom_exceptions.dart';
+import 'package:flutter_launcher_icons/ios.dart';
+import 'package:flutter_launcher_icons/main.dart';
+import 'package:flutter_launcher_icons/utils.dart';
+import 'package:flutter_launcher_icons/xml_templates.dart';
+
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:get_storage/get_storage.dart';
 import 'package:flutter/cupertino.dart';
+import 'main.dart';
 
 class init_Dashboardv4 extends StatelessWidget {
   // final box = GetStorage();
@@ -111,6 +121,8 @@ class _Dashboardv4 extends State<Dashboardv4> {
         return 'assets/images/lamp.svg';
       case "tv":
         return 'assets/images/tv.svg';
+      case "logout":
+        return 'assets/images/logout.svg';
       default:
         return 'assets/images/lightning.svg';
     }
@@ -124,14 +136,37 @@ class _Dashboardv4 extends State<Dashboardv4> {
       child: ListView(
         children: [
           Container(
-              height: 180,
-              decoration: const BoxDecoration(
-                // color: Color.fromARGB(255, 255, 255, 255),
-                image: DecorationImage(
-                    alignment: Alignment.topCenter,
-                    image: AssetImage("assets/images/bg_dashboard2.jpg"),
-                    fit: BoxFit.contain),
-              )),
+            height: 180,
+            decoration: const BoxDecoration(
+              // color: Color.fromARGB(255, 255, 255, 255),
+              image: DecorationImage(
+                  alignment: Alignment.topCenter,
+                  image: AssetImage("assets/images/bg_dashboard2.jpg"),
+                  fit: BoxFit.contain),
+            ),
+            child: Center(
+                child: Padding(
+                    padding: const EdgeInsets.only(
+                      left: 300,
+                      top: 0,
+                      right: 0,
+                      bottom: 0,
+                    ),
+                    child: InkWell(
+                      onTap: () {
+                        // Log Out
+                        box.remove('token');
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => MyApp()),
+                        );
+                      },
+                      child: SizedBox(
+                          height: 40,
+                          width: 40,
+                          child: SvgPicture.asset(getIcon("logout"))),
+                    ))),
+          ),
           const Padding(
             padding: EdgeInsets.fromLTRB(25, 25, 0, 0),
             child: Text(
@@ -141,6 +176,7 @@ class _Dashboardv4 extends State<Dashboardv4> {
           ),
           Center(
             child: GridView.count(
+              physics: const NeverScrollableScrollPhysics(),
               crossAxisCount: 2,
               shrinkWrap: true,
               children: [
@@ -428,6 +464,7 @@ class _Dashboardv4 extends State<Dashboardv4> {
           ),
           Center(
             child: GridView.count(
+              physics: const NeverScrollableScrollPhysics(),
               crossAxisCount: 2,
               shrinkWrap: true,
               children: [
@@ -671,7 +708,8 @@ class _Dashboardv4 extends State<Dashboardv4> {
                                     child: SvgPicture.asset(
                                       getIcon("tv"),
                                       color: int.parse(hasil['state']) == 1
-                                          ? const Color.fromRGBO(184, 26, 183, 1)
+                                          ? const Color.fromRGBO(
+                                              184, 26, 183, 1)
                                           : Colors.black,
                                     ),
                                   ),
