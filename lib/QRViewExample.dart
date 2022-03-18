@@ -9,7 +9,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-import 'Dashboardv4.dart';
+import 'Dashboardv6.dart';
 
 class QRViewExample extends StatefulWidget {
   const QRViewExample({Key? key}) : super(key: key);
@@ -54,7 +54,7 @@ class _QRViewExampleState extends State<QRViewExample> {
         box.write('token', res["token"]);
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => init_Dashboardv4()),
+          MaterialPageRoute(builder: (context) => init_Dashboardv6()),
         );
         // print("doLogin");
       } else {
