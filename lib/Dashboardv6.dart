@@ -17,6 +17,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:get_storage/get_storage.dart';
 import 'package:flutter/cupertino.dart';
+import 'Chat.dart';
 import 'main.dart';
 
 class init_Dashboardv6 extends StatelessWidget {
@@ -643,6 +644,51 @@ class _Dashboardv6 extends State<Dashboardv6> {
           ),
         ],
       )),
+      Container(
+          margin: const EdgeInsets.only(top: 20.0),
+          height: 50,
+          padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+                primary: Color.fromRGBO(254, 233, 44, 1),
+                onPrimary: Colors.black),
+            child: const Text('Chat with admin'),
+            // Old qr scan
+            // onPressed: () async {
+            //   //scan qr
+            //   if (defaultTargetPlatform == TargetPlatform.iOS ||
+            //       defaultTargetPlatform == TargetPlatform.android) {
+            //     try {
+            //       ScanResult qrScanResult = await BarcodeScanner.scan();
+            //       String qrResult = qrScanResult.rawContent;
+            //       // String barcode = (await BarcodeScanner.scan()) as String;
+            //       // print(barcode);
+            //       dologinQR(qrResult);
+            //       setState(() {
+            //         box.write('token', qrResult);
+            //         barcode = qrResult;
+            //       });
+            //     } on PlatformException catch (error) {
+            //       if (error.code == BarcodeScanner.cameraAccessDenied) {
+            //         setState(() {
+            //           barcode =
+            //               'Izin kamera tidak diizinkan oleh si pengguna';
+            //         });
+            //       } else {
+            //         setState(() {
+            //           barcode = 'Error: $error';
+            //         });
+            //       }
+            //     }
+            //   }
+            // },
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => Chat()),
+              );
+            },
+          )),
     ]);
   }
 }
