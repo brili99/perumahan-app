@@ -21,14 +21,14 @@ import 'package:flutter/cupertino.dart';
 import 'chatMessageModel.dart';
 
 List<ChatMessage> messages = [
-  ChatMessage(messageContent: "Hello, Will", messageType: "receiver"),
-  ChatMessage(messageContent: "How have you been?", messageType: "receiver"),
-  ChatMessage(
-      messageContent: "Hey Kriss, I am doing fine dude. wbu?",
-      messageType: "sender"),
-  ChatMessage(messageContent: "ehhhh, doing OK.", messageType: "receiver"),
-  ChatMessage(
-      messageContent: "Is there any thing wrong?", messageType: "sender"),
+  ChatMessage(messageContent: "Test", messageType: "receiver"),
+  // ChatMessage(messageContent: "How have you been?", messageType: "receiver"),
+  // ChatMessage(
+  //     messageContent: "Hey Kriss, I am doing fine dude. wbu?",
+  //     messageType: "sender"),
+  // ChatMessage(messageContent: "ehhhh, doing OK.", messageType: "receiver"),
+  // ChatMessage(
+  //     messageContent: "Is there any thing wrong?", messageType: "sender"),
 ];
 
 class init_Chat extends StatelessWidget {
@@ -56,10 +56,44 @@ class Chat extends StatefulWidget {
 
 class _Chat extends State<Chat> {
   final box = GetStorage();
+  TextEditingController msgController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
+    String token = box.read('token').toString();
+    getMessage(token);
+    setState(() {});
+
+    // sinkronisasi pesan dari admin
+    Timer.periodic(new Duration(seconds: 5), (timer) {
+      // debugPrint(timer.tick.toString());
+      getSyncTimestamp(token);
+      // print("check");
+    });
+  }
+
+  int timestampMsg = 0;
+  getSyncTimestamp(String token) async {
+    var response = await http.post(
+      Uri.parse("https://iot.tigamas.com/api/app/action"),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode(<String, String>{
+        "action": "getLastMessageFromAdmin",
+        "token": token,
+      }),
+    );
+    var data = json.decode(response.body);
+    if (data['msg'] == "success") {
+      //Jika terdapat perubahan pesan
+      if (timestampMsg != data['data']) {
+        timestampMsg = data['data'];
+        getMessage(token);
+        //penambahan notif pesan jika diperlukan
+      } else {
+        print("pesan sama");
+      }
+    }
   }
 
   sendMessage(String token, String message) async {
@@ -72,11 +106,37 @@ class _Chat extends State<Chat> {
         "message": message,
       }),
     );
-    messages.add(ChatMessage(messageContent: message, messageType: "sender"));
+    if (json.decode(response.body)['msg'] == "success") {
+      messages.add(ChatMessage(messageContent: message, messageType: "sender"));
+    } else {
+      // msg fail
+    }
     // rVal = json.decode(response.body)['data'].cast<int>();
     setState(() {});
     // print(rVal);
     return response.body;
+  }
+
+  getMessage(String token) async {
+    messages = [];
+    var response = await http.post(
+      Uri.parse("https://iot.tigamas.com/api/app/action"),
+      headers: {"Content-Type": "application/json"},
+      body:
+          jsonEncode(<String, String>{"action": "getMessage", "token": token}),
+    );
+    var data = json.decode(response.body);
+    // print(data['data'].length);
+    if (data['msg'] == "success") {
+      for (var i = 0; i < data['data'].length; i++) {
+        // print(data['data'][i]);
+        var msgType =
+            data['data'][i]['from_admin'] == 1 ? "receiver" : "sender";
+        messages.add(ChatMessage(
+            messageContent: data['data'][i]['content'], messageType: msgType));
+      }
+      setState(() {});
+    }
   }
 
   @override
@@ -162,7 +222,7 @@ class _Chat extends State<Chat> {
                       borderRadius: BorderRadius.circular(20),
                       color: (messages[index].messageType == "receiver"
                           ? Colors.grey.shade200
-                          : Colors.blue[200]),
+                          : Color.fromRGBO(254, 233, 44, 1)),
                     ),
                     padding: EdgeInsets.all(16),
                     child: Text(
@@ -204,6 +264,7 @@ class _Chat extends State<Chat> {
                   ),
                   Expanded(
                     child: TextField(
+                      controller: msgController,
                       decoration: InputDecoration(
                           hintText: "Write message...",
                           hintStyle: TextStyle(color: Colors.black54),
@@ -215,14 +276,16 @@ class _Chat extends State<Chat> {
                   ),
                   FloatingActionButton(
                     onPressed: () {
-                      sendMessage(token, "Test");
+                      if (msgController.text != "") {
+                        sendMessage(token, msgController.text);
+                      }
                     },
                     child: Icon(
                       Icons.send,
-                      color: Colors.white,
+                      color: Colors.black,
                       size: 18,
                     ),
-                    backgroundColor: Colors.blue,
+                    backgroundColor: Color.fromRGBO(254, 233, 44, 1),
                     elevation: 0,
                   ),
                 ],
