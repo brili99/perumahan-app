@@ -57,6 +57,7 @@ class Chat extends StatefulWidget {
 class _Chat extends State<Chat> {
   final box = GetStorage();
   TextEditingController msgController = TextEditingController();
+  ScrollController listScrollController = ScrollController();
 
   @override
   void initState() {
@@ -88,10 +89,12 @@ class _Chat extends State<Chat> {
       //Jika terdapat perubahan pesan
       if (timestampMsg != data['data']) {
         timestampMsg = data['data'];
+        // print("pesan masuk");
         getMessage(token);
         //penambahan notif pesan jika diperlukan
+
       } else {
-        print("pesan sama");
+        // print("pesan sama");
       }
     }
   }
@@ -128,14 +131,22 @@ class _Chat extends State<Chat> {
     var data = json.decode(response.body);
     // print(data['data'].length);
     if (data['msg'] == "success") {
-      for (var i = 0; i < data['data'].length; i++) {
-        // print(data['data'][i]);
-        var msgType =
-            data['data'][i]['from_admin'] == 1 ? "receiver" : "sender";
-        messages.add(ChatMessage(
-            messageContent: data['data'][i]['content'], messageType: msgType));
+      try {
+        for (var i = 0; i < data['data'].length; i++) {
+          // print(data['data'][i]);
+          var msgType =
+              data['data'][i]['from_admin'] == 1 ? "receiver" : "sender";
+          messages.add(ChatMessage(
+              messageContent: data['data'][i]['content'],
+              messageType: msgType));
+        }
+      } finally {
+        if (listScrollController.hasClients) {
+          listScrollController
+              .jumpTo(listScrollController.position.maxScrollExtent);
+        }
+        setState(() {});
       }
-      setState(() {});
     }
   }
 
@@ -204,36 +215,75 @@ class _Chat extends State<Chat> {
       ),
       body: Stack(
         children: <Widget>[
-          ListView.builder(
-            itemCount: messages.length,
-            shrinkWrap: true,
-            padding: EdgeInsets.only(top: 10, bottom: 10),
-            physics: NeverScrollableScrollPhysics(),
-            itemBuilder: (context, index) {
-              return Container(
-                padding:
-                    EdgeInsets.only(left: 14, right: 14, top: 10, bottom: 10),
-                child: Align(
-                  alignment: (messages[index].messageType == "receiver"
-                      ? Alignment.topLeft
-                      : Alignment.topRight),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      color: (messages[index].messageType == "receiver"
-                          ? Colors.grey.shade200
-                          : Color.fromRGBO(254, 233, 44, 1)),
-                    ),
-                    padding: EdgeInsets.all(16),
-                    child: Text(
-                      messages[index].messageContent,
-                      style: TextStyle(fontSize: 15),
+          Padding(
+            padding: const EdgeInsets.only(
+              left: 0,
+              top: 0,
+              right: 0,
+              bottom: 60,
+            ),
+            child: ListView.builder(
+              controller: listScrollController,
+              itemCount: messages.length,
+              shrinkWrap: true,
+              padding: EdgeInsets.only(top: 10, bottom: 10),
+              physics: NeverScrollableScrollPhysics(),
+              itemBuilder: (context, index) {
+                return Container(
+                  padding:
+                      EdgeInsets.only(left: 14, right: 14, top: 10, bottom: 10),
+                  child: Align(
+                    alignment: (messages[index].messageType == "receiver"
+                        ? Alignment.topLeft
+                        : Alignment.topRight),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        color: (messages[index].messageType == "receiver"
+                            ? Colors.grey.shade200
+                            : Color.fromRGBO(254, 233, 44, 1)),
+                      ),
+                      padding: EdgeInsets.all(16),
+                      child: Text(
+                        messages[index].messageContent,
+                        style: TextStyle(fontSize: 15),
+                      ),
                     ),
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
+          // ListView.builder(
+          //   itemCount: messages.length,
+          //   shrinkWrap: true,
+          //   padding: EdgeInsets.only(top: 10, bottom: 10),
+          //   physics: NeverScrollableScrollPhysics(),
+          //   itemBuilder: (context, index) {
+          //     return Container(
+          //       padding:
+          //           EdgeInsets.only(left: 14, right: 14, top: 10, bottom: 10),
+          //       child: Align(
+          //         alignment: (messages[index].messageType == "receiver"
+          //             ? Alignment.topLeft
+          //             : Alignment.topRight),
+          //         child: Container(
+          //           decoration: BoxDecoration(
+          //             borderRadius: BorderRadius.circular(20),
+          //             color: (messages[index].messageType == "receiver"
+          //                 ? Colors.grey.shade200
+          //                 : Color.fromRGBO(254, 233, 44, 1)),
+          //           ),
+          //           padding: EdgeInsets.all(16),
+          //           child: Text(
+          //             messages[index].messageContent,
+          //             style: TextStyle(fontSize: 15),
+          //           ),
+          //         ),
+          //       ),
+          //     );
+          //   },
+          // ),
           Align(
             alignment: Alignment.bottomLeft,
             child: Container(
@@ -259,33 +309,37 @@ class _Chat extends State<Chat> {
                   //     ),
                   //   ),
                   // ),
-                  SizedBox(
+                  const SizedBox(
                     width: 15,
                   ),
                   Expanded(
                     child: TextField(
                       controller: msgController,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                           hintText: "Write message...",
                           hintStyle: TextStyle(color: Colors.black54),
                           border: InputBorder.none),
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 15,
                   ),
                   FloatingActionButton(
                     onPressed: () {
                       if (msgController.text != "") {
                         sendMessage(token, msgController.text);
+                        if (listScrollController.hasClients) {
+                          listScrollController.jumpTo(
+                              listScrollController.position.maxScrollExtent);
+                        }
                       }
                     },
-                    child: Icon(
+                    child: const Icon(
                       Icons.send,
                       color: Colors.black,
                       size: 18,
                     ),
-                    backgroundColor: Color.fromRGBO(254, 233, 44, 1),
+                    backgroundColor: const Color.fromRGBO(254, 233, 44, 1),
                     elevation: 0,
                   ),
                 ],
