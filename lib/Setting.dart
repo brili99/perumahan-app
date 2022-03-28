@@ -46,6 +46,10 @@ enum ModeOtomatisLampu { nyala, mati }
 class _Setting extends State<Setting> {
   final box = GetStorage();
   ModeOtomatisLampu? _character = ModeOtomatisLampu.nyala;
+  List<TextEditingController> ctrlTxtInput =
+      List.generate(8, (i) => TextEditingController());
+  // TextEditingController nameController = TextEditingController();
+
   List<String> mode_relay = ['lampu', 'tv', 'ac', 'lain-lain'];
   List<String> jenis_relay = [
     'lampu',
@@ -76,6 +80,9 @@ class _Setting extends State<Setting> {
   @override
   Widget build(BuildContext context) {
     String token = box.read('token').toString();
+    for (var i = 0; i < ctrlTxtInput.length; i++) {
+      ctrlTxtInput[i].text = nama_relay[i];
+    }
     return Scaffold(
         appBar: AppBar(
           elevation: 0,
@@ -83,29 +90,29 @@ class _Setting extends State<Setting> {
           backgroundColor: Colors.white,
           flexibleSpace: SafeArea(
             child: Container(
-              padding: EdgeInsets.only(right: 16),
+              padding: const EdgeInsets.only(right: 16),
               child: Row(
                 children: <Widget>[
                   IconButton(
                     onPressed: () {
                       Navigator.pop(context);
                     },
-                    icon: Icon(
+                    icon: const Icon(
                       Icons.arrow_back,
                       color: Colors.black,
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 2,
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 12,
                   ),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
+                      children: const <Widget>[
                         Text(
                           "Setting",
                           style: TextStyle(
@@ -184,7 +191,7 @@ class _Setting extends State<Setting> {
               padding: const EdgeInsets.only(
                 left: 20,
                 top: 0,
-                right: 0,
+                right: 20,
                 bottom: 0,
               ),
               child: Column(
@@ -192,8 +199,8 @@ class _Setting extends State<Setting> {
                 children: <Widget>[
                   Row(
                     children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.only(
+                      const Padding(
+                        padding: EdgeInsets.only(
                           left: 0,
                           top: 0,
                           right: 10,
@@ -219,10 +226,23 @@ class _Setting extends State<Setting> {
                         ),
                       ),
                       Expanded(
-                        child: FittedBox(
-                          fit:
-                              BoxFit.contain, // otherwise the logo will be tiny
-                          child: FlutterLogo(),
+                        child: Padding(
+                          padding: const EdgeInsets.only(
+                            left: 20,
+                            top: 0,
+                            right: 0,
+                            bottom: 20,
+                          ),
+                          child: TextFormField(
+                            controller: ctrlTxtInput[0],
+                            onChanged: (newVal) {
+                              nama_relay[0] = newVal;
+                            },
+                            decoration: const InputDecoration(
+                              border: UnderlineInputBorder(),
+                              labelText: 'Nama Device',
+                            ),
+                          ),
                         ),
                       ),
                     ],
