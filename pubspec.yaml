@@ -82,6 +82,8 @@ flutter:
     - assets/images/tv.svg
     - assets/images/logout.svg
     - assets/images/logo-Tigamas.png
+    - assets/images/message.svg
+    - assets/images/cog.svg
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

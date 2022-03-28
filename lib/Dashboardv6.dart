@@ -17,6 +17,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:get_storage/get_storage.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:tigamas_app/Setting.dart';
 import 'Chat.dart';
 import 'main.dart';
 
@@ -87,6 +88,10 @@ class _Dashboardv6 extends State<Dashboardv6> {
         return 'assets/images/tv.svg';
       case "logout":
         return 'assets/images/logout.svg';
+      case "setting":
+        return 'assets/images/cog.svg';
+      case "chat":
+        return 'assets/images/message.svg';
       default:
         return 'assets/images/lightning.svg';
     }
@@ -183,28 +188,62 @@ class _Dashboardv6 extends State<Dashboardv6> {
               image: AssetImage("assets/images/bg_dashboard2.jpg"),
               fit: BoxFit.contain),
         ),
-        child: Center(
-            child: Padding(
-                padding: const EdgeInsets.only(
-                  left: 300,
-                  top: 0,
-                  right: 0,
-                  bottom: 0,
+        child: Padding(
+            padding: const EdgeInsets.only(
+              left: 300,
+              top: 0,
+              right: 0,
+              bottom: 0,
+            ),
+            child: Row(
+              children: <Widget>[
+                Expanded(
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const Chat()),
+                      );
+                    },
+                    child: SizedBox(
+                        height: 40,
+                        width: 40,
+                        child: SvgPicture.asset(getIcon("chat"))),
+                  ),
                 ),
-                child: InkWell(
-                  onTap: () {
-                    // Log Out
-                    box.remove('token');
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => MyApp()),
-                    );
-                  },
-                  child: SizedBox(
-                      height: 40,
-                      width: 40,
-                      child: SvgPicture.asset(getIcon("logout"))),
-                ))),
+                Expanded(
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const Setting()),
+                      );
+                    },
+                    child: SizedBox(
+                        height: 40,
+                        width: 40,
+                        child: SvgPicture.asset(getIcon("setting"))),
+                  ),
+                ),
+                Expanded(
+                  child: InkWell(
+                    onTap: () {
+                      // Log Out
+                      box.remove('token');
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => MyApp()),
+                      );
+                    },
+                    child: SizedBox(
+                        height: 40,
+                        width: 40,
+                        child: SvgPicture.asset(getIcon("logout"))),
+                  ),
+                ),
+              ],
+            )),
       ),
       const Padding(
         padding: EdgeInsets.fromLTRB(25, 25, 0, 0),
@@ -644,51 +683,22 @@ class _Dashboardv6 extends State<Dashboardv6> {
           ),
         ],
       )),
-      Container(
-          margin: const EdgeInsets.only(top: 20.0),
-          height: 50,
-          padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-                primary: Color.fromRGBO(254, 233, 44, 1),
-                onPrimary: Colors.black),
-            child: const Text('Chat with admin'),
-            // Old qr scan
-            // onPressed: () async {
-            //   //scan qr
-            //   if (defaultTargetPlatform == TargetPlatform.iOS ||
-            //       defaultTargetPlatform == TargetPlatform.android) {
-            //     try {
-            //       ScanResult qrScanResult = await BarcodeScanner.scan();
-            //       String qrResult = qrScanResult.rawContent;
-            //       // String barcode = (await BarcodeScanner.scan()) as String;
-            //       // print(barcode);
-            //       dologinQR(qrResult);
-            //       setState(() {
-            //         box.write('token', qrResult);
-            //         barcode = qrResult;
-            //       });
-            //     } on PlatformException catch (error) {
-            //       if (error.code == BarcodeScanner.cameraAccessDenied) {
-            //         setState(() {
-            //           barcode =
-            //               'Izin kamera tidak diizinkan oleh si pengguna';
-            //         });
-            //       } else {
-            //         setState(() {
-            //           barcode = 'Error: $error';
-            //         });
-            //       }
-            //     }
-            //   }
-            // },
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => Chat()),
-              );
-            },
-          )),
+      // Container(
+      //     margin: const EdgeInsets.only(top: 20.0),
+      //     height: 50,
+      //     padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
+      //     child: ElevatedButton(
+      //       style: ElevatedButton.styleFrom(
+      //           primary: Color.fromRGBO(254, 233, 44, 1),
+      //           onPrimary: Colors.black),
+      //       child: const Text('Chat with admin'),
+      //       onPressed: () {
+      //         Navigator.push(
+      //           context,
+      //           MaterialPageRoute(builder: (context) => Chat()),
+      //         );
+      //       },
+      //     )),
     ]);
   }
 }

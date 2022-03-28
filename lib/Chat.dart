@@ -141,9 +141,13 @@ class _Chat extends State<Chat> {
               messageType: msgType));
         }
       } finally {
-        if (listScrollController.hasClients) {
-          listScrollController
-              .jumpTo(listScrollController.position.maxScrollExtent);
+        try {
+          if (listScrollController.hasClients) {
+            listScrollController
+                .jumpTo(listScrollController.position.maxScrollExtent);
+          }
+        } catch (e) {
+          // print(e);
         }
         setState(() {});
       }
@@ -204,10 +208,10 @@ class _Chat extends State<Chat> {
                     ],
                   ),
                 ),
-                Icon(
-                  Icons.settings,
-                  color: Colors.black54,
-                ),
+                // Icon(
+                //   Icons.settings,
+                //   color: Colors.black54,
+                // ),
               ],
             ),
           ),
@@ -227,7 +231,7 @@ class _Chat extends State<Chat> {
               itemCount: messages.length,
               shrinkWrap: true,
               padding: EdgeInsets.only(top: 10, bottom: 10),
-              physics: NeverScrollableScrollPhysics(),
+              physics: const AlwaysScrollableScrollPhysics(),
               itemBuilder: (context, index) {
                 return Container(
                   padding:
@@ -328,6 +332,7 @@ class _Chat extends State<Chat> {
                     onPressed: () {
                       if (msgController.text != "") {
                         sendMessage(token, msgController.text);
+                        msgController.text = "";
                         if (listScrollController.hasClients) {
                           listScrollController.jumpTo(
                               listScrollController.position.maxScrollExtent);
