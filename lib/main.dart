@@ -20,16 +20,16 @@ import 'package:path_provider/path_provider.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 // import 'Dashboard.dart';
 import 'package:get_storage/get_storage.dart';
-import 'Dashboardv6.dart';
+import 'Dashboardv7.dart';
 import 'QRViewExample.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 void main() async {
   await GetStorage.init();
   GetStorage box = GetStorage();
-  if (box.read('token') != null)
-    runApp(init_Dashboardv6());
-  else
+  if (box.read('token') != null) {
+    runApp(init_Dashboardv7());
+  } else
     runApp(MyApp());
 }
 
@@ -53,7 +53,7 @@ class MyApp extends StatelessWidget {
     //       primaryColor: Colors.white,
     //     ),
     //     home: Scaffold(
-    //       body: init_Dashboardv6(),
+    //       body: init_Dashboardv7(),
     //     ),
     //   );
     // } else {
@@ -264,7 +264,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
         box.write('token', res["token"]);
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => init_Dashboardv6()),
+          MaterialPageRoute(builder: (context) => init_Dashboardv7()),
         );
       } else {
         //Wrong password
@@ -296,7 +296,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
         box.write('token', res["token"]);
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => init_Dashboardv6()),
+          MaterialPageRoute(builder: (context) => init_Dashboardv7()),
         );
       } else {
         //Wrong password

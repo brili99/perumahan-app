@@ -18,6 +18,10 @@ import 'package:http/http.dart' as http;
 import 'package:get_storage/get_storage.dart';
 import 'package:flutter/cupertino.dart';
 
+import 'column_builder.dart';
+import 'package:flutter_iconpicker/flutter_iconpicker.dart';
+import 'icon_cust_icons.dart';
+
 class init_Setting extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -46,6 +50,26 @@ enum ModeOtomatisLampu { nyala, mati }
 class _Setting extends State<Setting> {
   final box = GetStorage();
   ModeOtomatisLampu? _character = ModeOtomatisLampu.nyala;
+
+  String getIcon(String whaticon) {
+    switch (whaticon) {
+      case "ac":
+        return 'assets/images/air-conditioner.svg';
+      case "lamp":
+        return 'assets/images/lamp.svg';
+      case "tv":
+        return 'assets/images/tv.svg';
+      case "logout":
+        return 'assets/images/logout.svg';
+      case "setting":
+        return 'assets/images/cog.svg';
+      case "chat":
+        return 'assets/images/message.svg';
+      default:
+        return 'assets/images/lightning.svg';
+    }
+  }
+
   List<TextEditingController> ctrlTxtInput =
       List.generate(8, (i) => TextEditingController());
   // TextEditingController nameController = TextEditingController();
@@ -71,6 +95,54 @@ class _Setting extends State<Setting> {
     'Relay 7',
     'Relay 8',
   ];
+  List<IconData> icon_relay = [
+    IconCust.lamp,
+    IconCust.lamp,
+    IconCust.lamp,
+    IconCust.lamp,
+    IconCust.lamp,
+    IconCust.lamp,
+    IconCust.lamp,
+    IconCust.lamp
+  ];
+
+  List<SvgPicture> icons_svg_relay = [
+    SvgPicture.asset('assets/images/air-conditioner.svg'),
+    SvgPicture.asset('assets/images/lamp.svg'),
+    SvgPicture.asset('assets/images/tv.svg'),
+    SvgPicture.asset('assets/images/logout.svg'),
+    SvgPicture.asset('assets/images/cog.svg'),
+    SvgPicture.asset('assets/images/message.svg'),
+    SvgPicture.asset('assets/images/lightning.svg'),
+  ];
+
+  Map<String, IconData> myCustomIcons = {
+    'air_conditioner': IconCust.air_conditioner,
+    'lamp': IconCust.lamp,
+    'tv': IconCust.tv,
+    'cog': IconCust.cog,
+    'message': IconCust.message,
+  };
+
+  _pickIcon(int index) async {
+    IconData? icon = await FlutterIconPicker.showIconPicker(context,
+        adaptiveDialog: false,
+        showTooltips: false,
+        showSearchBar: true,
+        iconPickerShape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        iconPackModes: [IconPack.custom],
+        customIconPack: myCustomIcons);
+
+    if (icon != null) {
+      // notifier.iconData = icon;
+      setState(() {
+        icon_relay[index] = icon;
+      });
+      // debugPrint('Picked Icon:  $icon ');
+      debugPrint(icon_relay.toString());
+    }
+  }
 
   @override
   void initState() {
@@ -125,6 +197,14 @@ class _Setting extends State<Setting> {
                   //   Icons.settings,
                   //   color: Colors.black54,
                   // ),
+                  ElevatedButton(
+                    child: const Text("Simpan"),
+                    onPressed: () {
+                      setState(() {});
+                      print(jenis_relay);
+                      print(nama_relay);
+                    },
+                  )
                 ],
               ),
             ),
@@ -187,69 +267,158 @@ class _Setting extends State<Setting> {
                 style: TextStyle(fontSize: 20),
               ),
             ),
+            // Padding(
+            //   padding: const EdgeInsets.only(
+            //     left: 20,
+            //     top: 0,
+            //     right: 20,
+            //     bottom: 0,
+            //   ),
+            //   child: Column(
+            //     crossAxisAlignment: CrossAxisAlignment.stretch,
+            //     children: <Widget>[
+            // Row(
+            //   children: <Widget>[
+            //     const Padding(
+            //       padding: EdgeInsets.only(
+            //         left: 0,
+            //         top: 0,
+            //         right: 10,
+            //         bottom: 0,
+            //       ),
+            //       child: Text('R1', textAlign: TextAlign.left),
+            //     ),
+            //     Expanded(
+            //       child: DropdownButton<String>(
+            //         isExpanded: true,
+            //         value: jenis_relay[0],
+            //         items: mode_relay.map((String value) {
+            //           return DropdownMenuItem<String>(
+            //             value: value,
+            //             child: Text(value),
+            //           );
+            //         }).toList(),
+            //         onChanged: (newVal) {
+            //           setState(() {
+            //             jenis_relay[0] = newVal!;
+            //           });
+            //         },
+            //       ),
+            //     ),
+            //     Expanded(
+            //       child: Padding(
+            //         padding: const EdgeInsets.only(
+            //           left: 20,
+            //           top: 0,
+            //           right: 0,
+            //           bottom: 20,
+            //         ),
+            //         child: TextFormField(
+            //           controller: ctrlTxtInput[0],
+            //           onChanged: (newVal) {
+            //             nama_relay[0] = newVal;
+            //           },
+            //           decoration: const InputDecoration(
+            //             border: UnderlineInputBorder(),
+            //             labelText: 'Nama Device',
+            //           ),
+            //         ),
+            //       ),
+            //     ),
+            //   ],
+            // ),
+            //     ],
+            //   ),
+            // ),
+            // ElevatedButton(
+            //   child: const Text("Icon"),
+            //   onPressed: () {
+            //     _pickIcon();
+            //   },
+            // ),
             Padding(
-              padding: const EdgeInsets.only(
-                left: 20,
-                top: 0,
-                right: 20,
-                bottom: 0,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: <Widget>[
-                  Row(
-                    children: <Widget>[
-                      const Padding(
-                        padding: EdgeInsets.only(
-                          left: 0,
-                          top: 0,
-                          right: 10,
-                          bottom: 0,
-                        ),
-                        child: Text('R1', textAlign: TextAlign.left),
-                      ),
-                      Expanded(
-                        child: DropdownButton<String>(
-                          isExpanded: true,
-                          value: jenis_relay[0],
-                          items: mode_relay.map((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(value),
-                            );
-                          }).toList(),
-                          onChanged: (newVal) {
-                            setState(() {
-                              jenis_relay[0] = newVal!;
-                            });
-                          },
-                        ),
-                      ),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.only(
-                            left: 20,
-                            top: 0,
-                            right: 0,
-                            bottom: 20,
+                padding: const EdgeInsets.only(
+                  left: 20,
+                  top: 0,
+                  right: 20,
+                  bottom: 0,
+                ),
+                child: ColumnBuilder(
+                    itemCount: 8,
+                    itemBuilder: (BuildContext context, int index) {
+                      String textRelay = "R" + (index + 1).toString();
+                      return Row(
+                        children: <Widget>[
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              left: 0,
+                              top: 0,
+                              right: 10,
+                              bottom: 0,
+                            ),
+                            child: Text(textRelay, textAlign: TextAlign.left),
                           ),
-                          child: TextFormField(
-                            controller: ctrlTxtInput[0],
-                            onChanged: (newVal) {
-                              nama_relay[0] = newVal;
-                            },
-                            decoration: const InputDecoration(
-                              border: UnderlineInputBorder(),
-                              labelText: 'Nama Device',
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              left: 0,
+                              top: 0,
+                              right: 10,
+                              bottom: 0,
+                            ),
+                            child: OutlinedButton.icon(
+                              style: OutlinedButton.styleFrom(
+                                padding: const EdgeInsets.all(8),
+                              ),
+                              onPressed: () {
+                                _pickIcon(index);
+                              },
+                              icon: Icon(
+                                icon_relay[index],
+                                size: 24.0,
+                              ),
+                              label: const Text(''),
                             ),
                           ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
+                          // Expanded(
+                          //   child: DropdownButton<String>(
+                          //     isExpanded: true,
+                          //     value: jenis_relay[index],
+                          //     items: mode_relay.map((String value) {
+                          //       return DropdownMenuItem<String>(
+                          //         value: value,
+                          //         child: Text(value),
+                          //       );
+                          //     }).toList(),
+                          //     onChanged: (newVal) {
+                          //       setState(() {
+                          //         jenis_relay[index] = newVal!;
+                          //       });
+                          //     },
+                          //   ),
+                          // ),
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.only(
+                                left: 20,
+                                top: 0,
+                                right: 0,
+                                bottom: 20,
+                              ),
+                              child: TextFormField(
+                                controller: ctrlTxtInput[index],
+                                onChanged: (newVal) {
+                                  nama_relay[index] = newVal;
+                                },
+                                decoration: const InputDecoration(
+                                  border: UnderlineInputBorder(),
+                                  labelText: 'Nama Device',
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      );
+                    })),
           ],
         ));
   }
