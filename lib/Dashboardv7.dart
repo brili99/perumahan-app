@@ -164,7 +164,7 @@ class _Dashboardv6 extends State<Dashboardv7> {
         )),
         child: Padding(
             padding: const EdgeInsets.only(
-              left: 300,
+              left: 0,
               top: 0,
               right: 0,
               bottom: 0,
@@ -172,49 +172,49 @@ class _Dashboardv6 extends State<Dashboardv7> {
             child: Row(
               children: <Widget>[
                 Expanded(
-                  child: InkWell(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const Chat()),
-                      );
-                    },
-                    child: SizedBox(
-                        height: 40,
-                        width: 40,
-                        child: SvgPicture.asset(getIcon("chat"))),
-                  ),
+                  // child: FittedBox(
+                  //   fit: BoxFit.contain, // otherwise the logo will be tiny
+                  //   child: Image.asset("assets/images/logo_tigamas2.png"),
+                  // ),
+                  child: Image.asset("assets/images/logo_tigamas2.png"),
                 ),
-                Expanded(
-                  child: InkWell(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const Setting()),
-                      );
-                    },
-                    child: SizedBox(
-                        height: 40,
-                        width: 40,
-                        child: SvgPicture.asset(getIcon("setting"))),
-                  ),
+                InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const Chat()),
+                    );
+                  },
+                  child: SizedBox(
+                      height: 40,
+                      width: 40,
+                      child: SvgPicture.asset(getIcon("chat"))),
                 ),
-                Expanded(
-                  child: InkWell(
-                    onTap: () {
-                      // Log Out
-                      box.remove('token');
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => MyApp()),
-                      );
-                    },
-                    child: SizedBox(
-                        height: 40,
-                        width: 40,
-                        child: SvgPicture.asset(getIcon("logout"))),
-                  ),
+                InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const Setting()),
+                    );
+                  },
+                  child: SizedBox(
+                      height: 40,
+                      width: 40,
+                      child: SvgPicture.asset(getIcon("setting"))),
+                ),
+                InkWell(
+                  onTap: () {
+                    // Log Out
+                    box.remove('token');
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => MyApp()),
+                    );
+                  },
+                  child: SizedBox(
+                      height: 40,
+                      width: 40,
+                      child: SvgPicture.asset(getIcon("logout"))),
                 ),
               ],
             )),
