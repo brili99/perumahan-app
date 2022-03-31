@@ -147,6 +147,21 @@ class _Setting extends State<Setting> {
     }
   }
 
+  uploadSetting(String token) async {
+    var response = await http.post(
+      Uri.parse("https://iot.tigamas.com/api/app/action"),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode(<String, String>{
+        "action": "uploadSetting",
+        "token": token,
+      }),
+    );
+    // var rVal = json.decode(response.body)['dataValue'].cast<int>();
+    setState(() {});
+    // print(rVal);
+    return response.body;
+  }
+
   @override
   void initState() {
     super.initState();
