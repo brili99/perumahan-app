@@ -72,11 +72,11 @@ class _Dashboardv6 extends State<Dashboardv7> {
   Color getColorByIcon(String icon) {
     switch (icon) {
       case "ac":
-        return Color.fromRGBO(76, 133, 186, 1);
+        return const Color.fromRGBO(76, 133, 186, 1);
       case "lamp":
         return Colors.amber;
       case "tv":
-        return Color.fromRGBO(184, 26, 183, 1);
+        return const Color.fromRGBO(184, 26, 183, 1);
       default:
         return Colors.amber;
     }
@@ -136,7 +136,8 @@ class _Dashboardv6 extends State<Dashboardv7> {
   void initState() {
     super.initState();
     String token = box.read('token').toString();
-
+    // print(box.read('mode'));
+    mode = box.read('mode') ?? 0;
     getStatus(token);
   }
 
@@ -148,12 +149,19 @@ class _Dashboardv6 extends State<Dashboardv7> {
       Container(
         height: 180,
         decoration: const BoxDecoration(
-          // color: Color.fromARGB(255, 255, 255, 255),
-          image: DecorationImage(
-              alignment: Alignment.topCenter,
-              image: AssetImage("assets/images/bg_dashboard2.jpg"),
-              fit: BoxFit.contain),
-        ),
+            // color: Color.fromARGB(255, 255, 255, 255),
+            // image: DecorationImage(
+            //     alignment: Alignment.topCenter,
+            //     image: AssetImage("assets/images/bg_dashboard2.jpg"),
+            //     fit: BoxFit.contain),
+            gradient: LinearGradient(
+          begin: Alignment.bottomCenter,
+          end: Alignment.topCenter,
+          colors: [
+            Color.fromRGBO(250, 250, 250, 1),
+            Colors.amber,
+          ],
+        )),
         child: Padding(
             padding: const EdgeInsets.only(
               left: 300,
@@ -278,6 +286,7 @@ class _Dashboardv6 extends State<Dashboardv7> {
               onPressed: () {
                 setState(() {
                   mode = 1;
+                  box.write('mode', 1);
                 });
               },
             ),
@@ -323,6 +332,7 @@ class _Dashboardv6 extends State<Dashboardv7> {
               onPressed: () {
                 setState(() {
                   mode = 2;
+                  box.write('mode', 2);
                 });
               },
             ),
@@ -368,6 +378,7 @@ class _Dashboardv6 extends State<Dashboardv7> {
               onPressed: () {
                 setState(() {
                   mode = 3;
+                  box.write('mode', 3);
                 });
               },
             ),
@@ -413,6 +424,7 @@ class _Dashboardv6 extends State<Dashboardv7> {
               onPressed: () {
                 setState(() {
                   mode = 4;
+                  box.write('mode', 4);
                 });
               },
             ),
@@ -433,8 +445,10 @@ class _Dashboardv6 extends State<Dashboardv7> {
               onTap: () {
                 rVal[index] = rVal[index] == 1 ? 0 : 1;
                 setState(() {
+                  mode = 0;
+                  box.write('mode', 0);
                   setStateRelay(
-                      token, index.toString(), rVal[index].toString());
+                      token, (index + 1).toString(), rVal[index].toString());
                 });
               },
               child: Card(

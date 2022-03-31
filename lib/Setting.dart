@@ -140,7 +140,10 @@ class _Setting extends State<Setting> {
         icon_relay[index] = icon;
       });
       // debugPrint('Picked Icon:  $icon ');
-      debugPrint(icon_relay.toString());
+      // debugPrint(icon_relay.toString());
+      if (icon.toString() == "IconData(U+0E802)") {
+        debugPrint("lampu");
+      }
     }
   }
 
