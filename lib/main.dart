@@ -23,6 +23,7 @@ import 'package:get_storage/get_storage.dart';
 import 'Dashboardv7.dart';
 import 'QRViewExample.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 
 void main() async {
   await GetStorage.init();
@@ -87,6 +88,20 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   // String barcode = "";
 
   final box = GetStorage();
+
+  Future<String> getId() async {
+    var deviceInfo = DeviceInfoPlugin();
+    if (Platform.isIOS) {
+      // import 'dart:io'
+      var iosDeviceInfo = await deviceInfo.iosInfo;
+      return iosDeviceInfo.identifierForVendor.toString(); // unique ID on iOS
+    } else if (Platform.isAndroid) {
+      var androidDeviceInfo = await deviceInfo.androidInfo;
+      return androidDeviceInfo.androidId.toString(); // unique ID on Android
+    } else {
+      return "NonIosAndroid";
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -254,6 +269,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
       body: jsonEncode(<String, String>{
         'user': user,
         'pass': pass,
+        'deviceId': getId().toString()
       }),
     )
         .then((http.Response response) {
@@ -266,8 +282,10 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
           context,
           MaterialPageRoute(builder: (context) => init_Dashboardv7()),
         );
-      } else {
+      } else if (res["msg"] == "wrong") {
         //Wrong password
+      } else if (res["msg"] == "NotPass") {
+        //No more user available
       }
       // if (statusCode < 200 || statusCode >= 400 || json == null) {
       //   print(jsonDecode(response.body)["message"]);

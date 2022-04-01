@@ -69,6 +69,10 @@ class _Dashboardv6 extends State<Dashboardv7> {
     'Relay',
   ];
 
+  List<int> shortcutSiang = List.generate(8, (i) => 0);
+  List<int> shortcutMalam = List.generate(8, (i) => 0);
+  List<int> shortcutPergi = List.generate(8, (i) => 0);
+
   Color getColorByIcon(String icon) {
     switch (icon) {
       case "ac":
@@ -105,12 +109,51 @@ class _Dashboardv6 extends State<Dashboardv7> {
         "token": token,
       }),
     );
-    rVal = json.decode(response.body)['dataValue'].cast<int>();
-    rNama = json.decode(response.body)['dataName'].cast<String>();
-    rIconPath = json.decode(response.body)['dataIcon'].cast<String>();
-    setState(() {});
+    setState(() {
+      rVal = json.decode(response.body)['dataValue'].cast<int>();
+      rNama = json.decode(response.body)['dataName'].cast<String>();
+      rIconPath = json.decode(response.body)['dataIcon'].cast<String>();
+      shortcutSiang = json.decode(response.body)['shortcutSiang'].cast<int>();
+      shortcutMalam = json.decode(response.body)['shortcutMalam'].cast<int>();
+      shortcutPergi = json.decode(response.body)['shortcutPergi'].cast<int>();
+    });
     // print(rVal);
     return response.body;
+  }
+
+  void shortcutRelay(String whatshortcut) {
+    String token = box.read('token').toString();
+    switch (whatshortcut) {
+      case "siang":
+        setState(() {
+          for (var i = 0; i < shortcutSiang.length; i++) {
+            setStateRelay(
+                token, (i + 1).toString(), shortcutSiang[i].toString());
+          }
+          rVal = shortcutSiang;
+        });
+        break;
+      case "malam":
+        setState(() {
+          for (var i = 0; i < shortcutMalam.length; i++) {
+            setStateRelay(
+                token, (i + 1).toString(), shortcutMalam[i].toString());
+          }
+          rVal = shortcutMalam;
+        });
+        break;
+      case "pergi":
+        setState(() {
+          for (var i = 0; i < shortcutPergi.length; i++) {
+            setStateRelay(
+                token, (i + 1).toString(), shortcutPergi[i].toString());
+          }
+          rVal = shortcutPergi;
+        });
+        break;
+      default:
+        debugPrint("Wrong shortcut");
+    }
   }
 
   String getIcon(String whaticon) {
@@ -128,6 +171,7 @@ class _Dashboardv6 extends State<Dashboardv7> {
       case "chat":
         return 'assets/images/message.svg';
       default:
+        debugPrint(whaticon);
         return 'assets/images/lightning.svg';
     }
   }
@@ -149,19 +193,20 @@ class _Dashboardv6 extends State<Dashboardv7> {
       Container(
         height: 180,
         decoration: const BoxDecoration(
-            // color: Color.fromARGB(255, 255, 255, 255),
-            // image: DecorationImage(
-            //     alignment: Alignment.topCenter,
-            //     image: AssetImage("assets/images/bg_dashboard2.jpg"),
-            //     fit: BoxFit.contain),
-            gradient: LinearGradient(
-          begin: Alignment.bottomCenter,
-          end: Alignment.topCenter,
-          colors: [
-            Color.fromRGBO(250, 250, 250, 1),
-            Colors.amber,
-          ],
-        )),
+          color: Color.fromARGB(255, 250, 250, 250),
+          image: DecorationImage(
+              alignment: Alignment.topCenter,
+              image: AssetImage("assets/images/bg_menu.png"),
+              fit: BoxFit.fitWidth),
+          //     gradient: LinearGradient(
+          //   begin: Alignment.bottomCenter,
+          //   end: Alignment.topCenter,
+          //   colors: [
+          //     Color.fromRGBO(250, 250, 250, 1),
+          //     Colors.amber,
+          //   ],
+          // )
+        ),
         child: Padding(
             padding: const EdgeInsets.only(
               left: 0,
@@ -171,12 +216,11 @@ class _Dashboardv6 extends State<Dashboardv7> {
             ),
             child: Row(
               children: <Widget>[
-                Expanded(
-                  // child: FittedBox(
-                  //   fit: BoxFit.contain, // otherwise the logo will be tiny
-                  //   child: Image.asset("assets/images/logo_tigamas2.png"),
-                  // ),
-                  child: Image.asset("assets/images/logo_tigamas2.png"),
+                // Expanded(
+                //   child: Image.asset("assets/images/logo_tigamas2.png"),
+                // ),
+                const Expanded(
+                  child: Text(""),
                 ),
                 InkWell(
                   onTap: () {
@@ -188,7 +232,8 @@ class _Dashboardv6 extends State<Dashboardv7> {
                   child: SizedBox(
                       height: 40,
                       width: 40,
-                      child: SvgPicture.asset(getIcon("chat"))),
+                      child: SvgPicture.asset(getIcon("chat"),
+                          color: Colors.amber)),
                 ),
                 InkWell(
                   onTap: () {
@@ -200,7 +245,10 @@ class _Dashboardv6 extends State<Dashboardv7> {
                   child: SizedBox(
                       height: 40,
                       width: 40,
-                      child: SvgPicture.asset(getIcon("setting"))),
+                      child: SvgPicture.asset(
+                        getIcon("setting"),
+                        color: Colors.amber,
+                      )),
                 ),
                 InkWell(
                   onTap: () {
@@ -214,8 +262,12 @@ class _Dashboardv6 extends State<Dashboardv7> {
                   child: SizedBox(
                       height: 40,
                       width: 40,
-                      child: SvgPicture.asset(getIcon("logout"))),
+                      child: SvgPicture.asset(getIcon("logout"),
+                          color: Colors.amber)),
                 ),
+                const SizedBox(
+                  width: 50,
+                )
               ],
             )),
       ),
@@ -288,6 +340,7 @@ class _Dashboardv6 extends State<Dashboardv7> {
                   mode = 1;
                   box.write('mode', 1);
                 });
+                shortcutRelay("siang");
               },
             ),
             TextButton(
@@ -334,6 +387,7 @@ class _Dashboardv6 extends State<Dashboardv7> {
                   mode = 2;
                   box.write('mode', 2);
                 });
+                shortcutRelay("malam");
               },
             ),
             TextButton(
@@ -380,54 +434,55 @@ class _Dashboardv6 extends State<Dashboardv7> {
                   mode = 3;
                   box.write('mode', 3);
                 });
+                shortcutRelay("pergi");
               },
             ),
-            TextButton(
-              child: Container(
-                decoration: BoxDecoration(
-                  boxShadow: [
-                    BoxShadow(
-                      color: mode == 4 ? Colors.grey : Colors.white,
-                      blurRadius: 15.0,
-                    ),
-                  ],
-                ),
-                child: Card(
-                  color: mode == 4
-                      ? Color.fromRGBO(228, 229, 231, 1)
-                      : Colors.white,
-                  child: Padding(
-                    padding: const EdgeInsets.only(
-                      left: 15,
-                      top: 10,
-                      right: 15,
-                      bottom: 10,
-                    ),
-                    child: Column(
-                      children: const <Widget>[
-                        Icon(
-                          FontAwesomeIcons.cog,
-                          size: 30.0,
-                          color: Colors.amber,
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Center(
-                          child: Text("Custom"),
-                        )
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              onPressed: () {
-                setState(() {
-                  mode = 4;
-                  box.write('mode', 4);
-                });
-              },
-            ),
+            // TextButton(
+            //   child: Container(
+            //     decoration: BoxDecoration(
+            //       boxShadow: [
+            //         BoxShadow(
+            //           color: mode == 4 ? Colors.grey : Colors.white,
+            //           blurRadius: 15.0,
+            //         ),
+            //       ],
+            //     ),
+            //     child: Card(
+            //       color: mode == 4
+            //           ? Color.fromRGBO(228, 229, 231, 1)
+            //           : Colors.white,
+            //       child: Padding(
+            //         padding: const EdgeInsets.only(
+            //           left: 15,
+            //           top: 10,
+            //           right: 15,
+            //           bottom: 10,
+            //         ),
+            //         child: Column(
+            //           children: const <Widget>[
+            //             Icon(
+            //               FontAwesomeIcons.cog,
+            //               size: 30.0,
+            //               color: Colors.amber,
+            //             ),
+            //             SizedBox(
+            //               height: 10,
+            //             ),
+            //             Center(
+            //               child: Text("Custom"),
+            //             )
+            //           ],
+            //         ),
+            //       ),
+            //     ),
+            //   ),
+            //   onPressed: () {
+            //     setState(() {
+            //       mode = 4;
+            //       box.write('mode', 4);
+            //     });
+            //   },
+            // ),
           ],
         ),
       ),

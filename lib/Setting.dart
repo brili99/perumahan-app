@@ -21,6 +21,7 @@ import 'package:flutter/cupertino.dart';
 import 'column_builder.dart';
 import 'package:flutter_iconpicker/flutter_iconpicker.dart';
 import 'icon_cust_icons.dart';
+import 'package:restart_app/restart_app.dart';
 
 class init_Setting extends StatelessWidget {
   @override
@@ -49,42 +50,22 @@ enum ModeOtomatisLampu { nyala, mati }
 
 class _Setting extends State<Setting> {
   final box = GetStorage();
-  ModeOtomatisLampu? _character = ModeOtomatisLampu.nyala;
-
-  String getIcon(String whaticon) {
-    switch (whaticon) {
-      case "ac":
-        return 'assets/images/air-conditioner.svg';
-      case "lamp":
-        return 'assets/images/lamp.svg';
-      case "tv":
-        return 'assets/images/tv.svg';
-      case "logout":
-        return 'assets/images/logout.svg';
-      case "setting":
-        return 'assets/images/cog.svg';
-      case "chat":
-        return 'assets/images/message.svg';
-      default:
-        return 'assets/images/lightning.svg';
-    }
-  }
+  ModeOtomatisLampu? _character;
 
   List<TextEditingController> ctrlTxtInput =
       List.generate(8, (i) => TextEditingController());
-  // TextEditingController nameController = TextEditingController();
 
-  List<String> mode_relay = ['lampu', 'tv', 'ac', 'lain-lain'];
-  List<String> jenis_relay = [
-    'lampu',
-    'lampu',
-    'lampu',
-    'lampu',
-    'lampu',
-    'lampu',
-    'lampu',
-    'lampu',
-  ];
+  // List<String> mode_relay = ['lampu', 'tv', 'ac', 'lain-lain'];
+  // List<String> jenis_relay = [
+  //   'lampu',
+  //   'lampu',
+  //   'lampu',
+  //   'lampu',
+  //   'lampu',
+  //   'lampu',
+  //   'lampu',
+  //   'lampu',
+  // ];
   List<String> nama_relay = [
     'Relay 1',
     'Relay 2',
@@ -95,7 +76,18 @@ class _Setting extends State<Setting> {
     'Relay 7',
     'Relay 8',
   ];
+  List<String> icon_str_relay = [
+    'lamp', //icon lampu
+    'lamp',
+    'lamp',
+    'lamp',
+    'lamp',
+    'lamp',
+    'lamp',
+    'lamp'
+  ];
   List<IconData> icon_relay = [
+    //untuk tampilan di
     IconCust.lamp,
     IconCust.lamp,
     IconCust.lamp,
@@ -105,6 +97,23 @@ class _Setting extends State<Setting> {
     IconCust.lamp,
     IconCust.lamp
   ];
+
+  strToIconCust(String waticon) {
+    switch (waticon) {
+      case "ac":
+        return IconCust.air_conditioner;
+      case "setting":
+        return IconCust.cog;
+      case "lamp":
+        return IconCust.lamp;
+      case "chat":
+        return IconCust.message;
+      case "tv":
+        return IconCust.tv;
+      default:
+        return IconCust.lamp;
+    }
+  }
 
   List<SvgPicture> icons_svg_relay = [
     SvgPicture.asset('assets/images/air-conditioner.svg'),
@@ -138,33 +147,84 @@ class _Setting extends State<Setting> {
       // notifier.iconData = icon;
       setState(() {
         icon_relay[index] = icon;
+        // icon_str_relay[index] = icon.toString();
+        if (icon.toString() == "IconData(U+0E800)") {
+          icon_str_relay[index] = "ac";
+        } else if (icon.toString() == "IconData(U+0E801)") {
+          icon_str_relay[index] = "setting";
+        } else if (icon.toString() == "IconData(U+0E802)") {
+          icon_str_relay[index] = "lamp";
+        } else if (icon.toString() == "IconData(U+0E803)") {
+          icon_str_relay[index] = "chat";
+        } else if (icon.toString() == "IconData(U+0E804)") {
+          icon_str_relay[index] = "tv";
+        }
       });
       // debugPrint('Picked Icon:  $icon ');
       // debugPrint(icon_relay.toString());
-      if (icon.toString() == "IconData(U+0E802)") {
-        debugPrint("lampu");
-      }
     }
   }
 
-  uploadSetting(String token) async {
+  void uploadSetting(String token) async {
     var response = await http.post(
       Uri.parse("https://iot.tigamas.com/api/app/action"),
       headers: {"Content-Type": "application/json"},
-      body: jsonEncode(<String, String>{
+      body: jsonEncode(<String, dynamic>{
         "action": "uploadSetting",
         "token": token,
+        "nama_relay": nama_relay,
+        "icon_relay": icon_str_relay,
+        "shortcutSiang": shortcutSiang,
+        "shortcutMalam": shortcutMalam,
+        "shortcutPergi": shortcutPergi,
       }),
     );
-    // var rVal = json.decode(response.body)['dataValue'].cast<int>();
-    setState(() {});
-    // print(rVal);
-    return response.body;
+    var status = json.decode(response.body)['msg'];
+    if (status == "success") {
+      debugPrint("Berhasil upload setting");
+      Restart.restartApp();
+    } else {
+      debugPrint(response.body);
+    }
+  }
+
+  List<int> shortcutSiang = List.generate(8, (i) => 0);
+  List<int> shortcutMalam = List.generate(8, (i) => 0);
+  List<int> shortcutPergi = List.generate(8, (i) => 0);
+
+  void getSetting(String token) async {
+    var response = await http.post(
+      Uri.parse("https://iot.tigamas.com/api/app/action"),
+      headers: {"Content-Type": "application/json"},
+      body:
+          jsonEncode(<String, String>{"action": "getSetting", "token": token}),
+    );
+    var data = json.decode(response.body);
+    // debugPrint(data);
+    var status = data['msg'];
+    if (status == "success") {
+      // print(data['icon_relay']);
+      data['icon_relay'] = data['icon_relay'].cast<String>();
+      // List<String> iconRelay = data['icon_relay'];
+      for (var i = 0; i < 8; i++) {
+        icon_relay[i] = strToIconCust(data['icon_relay'][i].toString());
+      }
+      setState(() {
+        nama_relay = data['nama_relay'].cast<String>();
+        icon_str_relay = data['icon_relay'];
+        shortcutSiang = data['shortcutSiang'].cast<int>();
+        shortcutMalam = data['shortcutMalam'].cast<int>();
+        shortcutPergi = data['shortcutPergi'].cast<int>();
+      });
+    } else {
+      debugPrint("ada yang salah");
+    }
   }
 
   @override
   void initState() {
     super.initState();
+    getSetting(box.read('token').toString());
   }
 
   @override
@@ -219,8 +279,9 @@ class _Setting extends State<Setting> {
                     child: const Text("Simpan"),
                     onPressed: () {
                       setState(() {});
-                      print(jenis_relay);
-                      print(nama_relay);
+                      // print(icon_str_relay);
+                      // print(nama_relay);
+                      uploadSetting(token);
                     },
                   )
                 ],
@@ -231,48 +292,48 @@ class _Setting extends State<Setting> {
         body: ListView(
           children: <Widget>[
             // const Text("Lampu mati saat malam hari:"),
-            const Padding(
-              padding: EdgeInsets.only(
-                left: 20,
-                top: 0,
-                right: 0,
-                bottom: 0,
-              ),
-              child: Text(
-                "Lampu mati saat malam hari:",
-                style: TextStyle(fontSize: 20),
-              ),
-            ),
-            Column(
-              children: <Widget>[
-                ListTile(
-                  title: const Text('Nyala', textAlign: TextAlign.left),
-                  leading: Radio<ModeOtomatisLampu>(
-                    value: ModeOtomatisLampu.nyala,
-                    groupValue: _character,
-                    onChanged: (ModeOtomatisLampu? value) {
-                      setState(() {
-                        _character = value;
-                        print(value);
-                      });
-                    },
-                  ),
-                ),
-                ListTile(
-                  title: const Text('Mati'),
-                  leading: Radio<ModeOtomatisLampu>(
-                    value: ModeOtomatisLampu.mati,
-                    groupValue: _character,
-                    onChanged: (ModeOtomatisLampu? value) {
-                      setState(() {
-                        _character = value;
-                        print(value);
-                      });
-                    },
-                  ),
-                ),
-              ],
-            ),
+            // const Padding(
+            //   padding: EdgeInsets.only(
+            //     left: 20,
+            //     top: 0,
+            //     right: 0,
+            //     bottom: 0,
+            //   ),
+            //   child: Text(
+            //     "Lampu mati saat malam hari:",
+            //     style: TextStyle(fontSize: 20),
+            //   ),
+            // ),
+            // Column(
+            //   children: <Widget>[
+            // ListTile(
+            //   title: const Text('Nyala', textAlign: TextAlign.left),
+            //   leading: Radio<ModeOtomatisLampu>(
+            //     value: ModeOtomatisLampu.nyala,
+            //     groupValue: _character,
+            //     onChanged: (ModeOtomatisLampu? value) {
+            //       setState(() {
+            //         _character = value;
+            //         print(value);
+            //       });
+            //     },
+            //   ),
+            // ),
+            // ListTile(
+            //   title: const Text('Mati'),
+            //   leading: Radio<ModeOtomatisLampu>(
+            //     value: ModeOtomatisLampu.mati,
+            //     groupValue: _character,
+            //     onChanged: (ModeOtomatisLampu? value) {
+            //       setState(() {
+            //         _character = value;
+            //         print(value);
+            //       });
+            //     },
+            //   ),
+            // ),
+            //   ],
+            // ),
             const Padding(
               padding: EdgeInsets.only(
                 left: 20,
@@ -328,23 +389,6 @@ class _Setting extends State<Setting> {
                               label: const Text(''),
                             ),
                           ),
-                          // Expanded(
-                          //   child: DropdownButton<String>(
-                          //     isExpanded: true,
-                          //     value: jenis_relay[index],
-                          //     items: mode_relay.map((String value) {
-                          //       return DropdownMenuItem<String>(
-                          //         value: value,
-                          //         child: Text(value),
-                          //       );
-                          //     }).toList(),
-                          //     onChanged: (newVal) {
-                          //       setState(() {
-                          //         jenis_relay[index] = newVal!;
-                          //       });
-                          //     },
-                          //   ),
-                          // ),
                           Expanded(
                             child: Padding(
                               padding: const EdgeInsets.only(
@@ -365,6 +409,210 @@ class _Setting extends State<Setting> {
                               ),
                             ),
                           ),
+                        ],
+                      );
+                    })),
+            const Padding(
+              padding: EdgeInsets.only(
+                left: 20,
+                top: 0,
+                right: 0,
+                bottom: 0,
+              ),
+              child: Text(
+                "Setting Shortcut Siang:",
+                style: TextStyle(fontSize: 20),
+              ),
+            ),
+            Padding(
+                padding: const EdgeInsets.only(
+                  left: 20,
+                  top: 0,
+                  right: 20,
+                  bottom: 0,
+                ),
+                child: ColumnBuilder(
+                    itemCount: 8,
+                    itemBuilder: (BuildContext context, int index) {
+                      String textRelay = "R" + (index + 1).toString();
+                      return Row(
+                        children: <Widget>[
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              left: 0,
+                              top: 0,
+                              right: 10,
+                              bottom: 0,
+                            ),
+                            child: Text(textRelay, textAlign: TextAlign.left),
+                          ),
+                          Expanded(
+                              child: ListTile(
+                            title:
+                                const Text('Nyala', textAlign: TextAlign.left),
+                            leading: Radio<int>(
+                              value: 1,
+                              groupValue: shortcutSiang[index],
+                              onChanged: (value) {
+                                setState(() {
+                                  shortcutSiang[index] = value!;
+                                  // print(value);
+                                });
+                              },
+                            ),
+                          )),
+                          Expanded(
+                              child: ListTile(
+                            title: const Text('Mati'),
+                            leading: Radio<int>(
+                              value: 0,
+                              groupValue: shortcutSiang[index],
+                              onChanged: (value) {
+                                setState(() {
+                                  shortcutSiang[index] = value!;
+                                  // print(value);
+                                });
+                              },
+                            ),
+                          )),
+                        ],
+                      );
+                    })),
+            const SizedBox(
+              height: 20,
+            ),
+            const Padding(
+              padding: EdgeInsets.only(
+                left: 20,
+                top: 0,
+                right: 0,
+                bottom: 0,
+              ),
+              child: Text(
+                "Setting Shortcut Malam:",
+                style: TextStyle(fontSize: 20),
+              ),
+            ),
+            Padding(
+                padding: const EdgeInsets.only(
+                  left: 20,
+                  top: 0,
+                  right: 20,
+                  bottom: 0,
+                ),
+                child: ColumnBuilder(
+                    itemCount: 8,
+                    itemBuilder: (BuildContext context, int index) {
+                      String textRelay = "R" + (index + 1).toString();
+                      return Row(
+                        children: <Widget>[
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              left: 0,
+                              top: 0,
+                              right: 10,
+                              bottom: 0,
+                            ),
+                            child: Text(textRelay, textAlign: TextAlign.left),
+                          ),
+                          Expanded(
+                              child: ListTile(
+                            title:
+                                const Text('Nyala', textAlign: TextAlign.left),
+                            leading: Radio<int>(
+                              value: 1,
+                              groupValue: shortcutMalam[index],
+                              onChanged: (value) {
+                                setState(() {
+                                  shortcutMalam[index] = value!;
+                                  // print(value);
+                                });
+                              },
+                            ),
+                          )),
+                          Expanded(
+                              child: ListTile(
+                            title: const Text('Mati'),
+                            leading: Radio<int>(
+                              value: 0,
+                              groupValue: shortcutMalam[index],
+                              onChanged: (value) {
+                                setState(() {
+                                  shortcutMalam[index] = value!;
+                                  // print(value);
+                                });
+                              },
+                            ),
+                          )),
+                        ],
+                      );
+                    })),
+            const SizedBox(
+              height: 20,
+            ),
+            const Padding(
+              padding: EdgeInsets.only(
+                left: 20,
+                top: 0,
+                right: 0,
+                bottom: 0,
+              ),
+              child: Text(
+                "Setting Shortcut Pergi:",
+                style: TextStyle(fontSize: 20),
+              ),
+            ),
+            Padding(
+                padding: const EdgeInsets.only(
+                  left: 20,
+                  top: 0,
+                  right: 20,
+                  bottom: 0,
+                ),
+                child: ColumnBuilder(
+                    itemCount: 8,
+                    itemBuilder: (BuildContext context, int index) {
+                      String textRelay = "R" + (index + 1).toString();
+                      return Row(
+                        children: <Widget>[
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              left: 0,
+                              top: 0,
+                              right: 10,
+                              bottom: 0,
+                            ),
+                            child: Text(textRelay, textAlign: TextAlign.left),
+                          ),
+                          Expanded(
+                              child: ListTile(
+                            title:
+                                const Text('Nyala', textAlign: TextAlign.left),
+                            leading: Radio<int>(
+                              value: 1,
+                              groupValue: shortcutPergi[index],
+                              onChanged: (value) {
+                                setState(() {
+                                  shortcutPergi[index] = value!;
+                                  // print(value);
+                                });
+                              },
+                            ),
+                          )),
+                          Expanded(
+                              child: ListTile(
+                            title: const Text('Mati'),
+                            leading: Radio<int>(
+                              value: 0,
+                              groupValue: shortcutPergi[index],
+                              onChanged: (value) {
+                                setState(() {
+                                  shortcutPergi[index] = value!;
+                                  // print(value);
+                                });
+                              },
+                            ),
+                          )),
                         ],
                       );
                     })),
