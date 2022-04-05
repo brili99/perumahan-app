@@ -24,6 +24,8 @@ import 'package:flutter_iconpicker/flutter_iconpicker.dart';
 import 'icon_cust_icons.dart';
 import 'package:restart_app/restart_app.dart';
 
+import 'main.dart';
+
 class init_Setting extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -190,7 +192,7 @@ class _Setting extends State<Setting> {
     // }
 
     var res = await session.post(
-        'https://iot.tigamas.com/api/app/loginQR',
+        'https://iot.tigamas.com/api/app/action',
         jsonEncode(<String, dynamic>{
           "action": "uploadSetting",
           "token": token,
@@ -200,7 +202,9 @@ class _Setting extends State<Setting> {
           "shortcutMalam": shortcutMalam,
           "shortcutPergi": shortcutPergi,
         }));
-    if (res["msg"] == "success") {
+    if (!res['session']) {
+      goBackLogin();
+    } else if (res["msg"] == "success") {
       debugPrint("Berhasil upload setting");
       Restart.restartApp();
     } else {
@@ -211,6 +215,15 @@ class _Setting extends State<Setting> {
   List<int> shortcutSiang = List.generate(8, (i) => 0);
   List<int> shortcutMalam = List.generate(8, (i) => 0);
   List<int> shortcutPergi = List.generate(8, (i) => 0);
+  void goBackLogin() async {
+    var res = await session.post("https://iot.tigamas.com/api/app/action",
+        jsonEncode(<String, String>{"action": "logout"}));
+    box.remove('token');
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => MyApp()),
+    );
+  }
 
   void getSetting(String token) async {
     // var response = await http.post(
@@ -240,9 +253,12 @@ class _Setting extends State<Setting> {
     //   debugPrint("ada yang salah");
     // }
 
-    var res = await session.post('https://iot.tigamas.com/api/app/loginQR',
+    var res = await session.post('https://iot.tigamas.com/api/app/action',
         jsonEncode(<String, String>{"action": "getSetting", "token": token}));
-    if (res["msg"] == "success") {
+    // debugPrint(jsonEncode(res));
+    if (!res['session']) {
+      goBackLogin();
+    } else if (res["msg"] == "success") {
       res['icon_relay'] = res['icon_relay'].cast<String>();
       for (var i = 0; i < 8; i++) {
         icon_relay[i] = strToIconCust(res['icon_relay'][i].toString());

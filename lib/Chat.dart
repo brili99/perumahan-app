@@ -20,6 +20,9 @@ import 'package:flutter/cupertino.dart';
 
 import 'chatMessageModel.dart';
 
+import 'Session.dart';
+import 'main.dart';
+
 List<ChatMessage> messages = [
   ChatMessage(messageContent: "Test", messageType: "receiver"),
   // ChatMessage(messageContent: "How have you been?", messageType: "receiver"),
@@ -56,6 +59,7 @@ class Chat extends StatefulWidget {
 
 class _Chat extends State<Chat> {
   final box = GetStorage();
+  Session session = Session();
   TextEditingController msgController = TextEditingController();
   ScrollController listScrollController = ScrollController();
 
@@ -99,46 +103,95 @@ class _Chat extends State<Chat> {
     }
   }
 
-  sendMessage(String token, String message) async {
-    var response = await http.post(
-      Uri.parse("https://iot.tigamas.com/api/app/action"),
-      headers: {"Content-Type": "application/json"},
-      body: jsonEncode(<String, String>{
-        "action": "sendMessage",
-        "token": token,
-        "message": message,
-      }),
+  void goBackLogin() async {
+    var res = await session.post("https://iot.tigamas.com/api/app/action",
+        jsonEncode(<String, String>{"action": "logout"}));
+    box.remove('token');
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => MyApp()),
     );
-    if (json.decode(response.body)['msg'] == "success") {
+  }
+
+  sendMessage(String token, String message) async {
+    // var response = await http.post(
+    //   Uri.parse("https://iot.tigamas.com/api/app/action"),
+    //   headers: {"Content-Type": "application/json"},
+    //   body: jsonEncode(<String, String>{
+    //     "action": "sendMessage",
+    //     "token": token,
+    //     "message": message,
+    //   }),
+    // );
+    // if (json.decode(response.body)['msg'] == "success") {
+    //   messages.add(ChatMessage(messageContent: message, messageType: "sender"));
+    // } else {
+    //   // msg fail
+    // }
+    // // rVal = json.decode(response.body)['data'].cast<int>();
+    // setState(() {});
+    // // print(rVal);
+
+    var res = await session.post(
+        "https://iot.tigamas.com/api/app/action",
+        jsonEncode(<String, String>{
+          "action": "sendMessage",
+          "token": token,
+          "message": message,
+        }));
+    if (!res['session']) {
+      goBackLogin();
+    } else if (res['msg'] == "success") {
       messages.add(ChatMessage(messageContent: message, messageType: "sender"));
-    } else {
-      // msg fail
     }
-    // rVal = json.decode(response.body)['data'].cast<int>();
     setState(() {});
-    // print(rVal);
-    return response.body;
+    return jsonEncode(res);
   }
 
   getMessage(String token) async {
     messages = [];
-    var response = await http.post(
-      Uri.parse("https://iot.tigamas.com/api/app/action"),
-      headers: {"Content-Type": "application/json"},
-      body:
-          jsonEncode(<String, String>{"action": "getMessage", "token": token}),
-    );
-    var data = json.decode(response.body);
-    // print(data['data'].length);
-    if (data['msg'] == "success") {
+    // var response = await http.post(
+    //   Uri.parse("https://iot.tigamas.com/api/app/action"),
+    //   headers: {"Content-Type": "application/json"},
+    //   body:
+    //       jsonEncode(<String, String>{"action": "getMessage", "token": token}),
+    // );
+    // var data = json.decode(response.body);
+    // if (data['msg'] == "success") {
+    //   try {
+    //     for (var i = 0; i < data['data'].length; i++) {
+    //       // print(data['data'][i]);
+    //       var msgType =
+    //           data['data'][i]['from_admin'] == 1 ? "receiver" : "sender";
+    //       messages.add(ChatMessage(
+    //           messageContent: data['data'][i]['content'],
+    //           messageType: msgType));
+    //     }
+    //   } finally {
+    //     try {
+    //       if (listScrollController.hasClients) {
+    //         listScrollController
+    //             .jumpTo(listScrollController.position.maxScrollExtent);
+    //       }
+    //     } catch (e) {
+    //       // print(e);
+    //     }
+    //     setState(() {});
+    //   }
+    // }
+
+    var res = await session.post("https://iot.tigamas.com/api/app/action",
+        jsonEncode(<String, String>{"action": "getMessage", "token": token}));
+    if (!res['session']) {
+      goBackLogin();
+    } else if (res['msg'] == "success") {
       try {
-        for (var i = 0; i < data['data'].length; i++) {
+        for (var i = 0; i < res['data'].length; i++) {
           // print(data['data'][i]);
           var msgType =
-              data['data'][i]['from_admin'] == 1 ? "receiver" : "sender";
+              res['data'][i]['from_admin'] == 1 ? "receiver" : "sender";
           messages.add(ChatMessage(
-              messageContent: data['data'][i]['content'],
-              messageType: msgType));
+              messageContent: res['data'][i]['content'], messageType: msgType));
         }
       } finally {
         try {
@@ -148,8 +201,9 @@ class _Chat extends State<Chat> {
           }
         } catch (e) {
           // print(e);
+        } finally {
+          setState(() {});
         }
-        setState(() {});
       }
     }
   }

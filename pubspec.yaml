@@ -48,6 +48,8 @@ dependencies:
   device_info_plus: ^3.2.2
   dio: ^4.0.6
   dio_cookie_manager: ^2.0.0
+  external_app_launcher: ^2.0.2
+  fluttertoast: ^8.0.9
 
 dev_dependencies:
   flutter_test:
@@ -87,6 +89,7 @@ flutter:
     - assets/images/lamp.svg
     - assets/images/tv.svg
     - assets/images/logout.svg
+    - assets/images/cctv.svg
     - assets/images/logo-Tigamas.png
     - assets/images/logo_tigamas2.png
     - assets/images/message.svg

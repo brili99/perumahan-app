@@ -26,6 +26,7 @@ import 'QRViewExample.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'Session.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 // import 'package:dio/dio.dart';
 // import 'package:dio_cookie_manager/dio_cookie_manager.dart';
@@ -87,6 +88,7 @@ class MyStatefulWidget extends StatefulWidget {
 class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   TextEditingController nameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+
   String barcode = "";
   String message = "";
 
@@ -94,6 +96,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
 
   final box = GetStorage();
   Session session = Session();
+  GlobalKey globalKey = GlobalKey();
   // var dio = Dio();
   // var cookieJar = CookieJar();
   // dio.interceptors.add(CookieManager(cookieJar));
@@ -136,6 +139,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
     // var screenSize = MediaQuery.of(context).size;
     // double maxWidth = screenSize.width > 500 ? 500 : screenSize.width;
     return Padding(
+        key: globalKey,
         padding: const EdgeInsets.all(10),
         child: ListView(
           children: <Widget>[
@@ -324,8 +328,24 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
     } else if (res["msg"] == "wrong") {
       //Wrong password
       debugPrint("Salah password atau user");
+      Fluttertoast.showToast(
+          msg: "Salah password",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0);
     } else if (res["msg"] == "NotPass") {
       //No more user available
+      Fluttertoast.showToast(
+          msg: "Tidak ada user tersedia",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0);
     }
 
     // final response = await dio.post('https://iot.tigamas.com/api/app/login',

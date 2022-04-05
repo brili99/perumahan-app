@@ -21,6 +21,7 @@ import 'package:tigamas_app/Setting.dart';
 import 'Chat.dart';
 import 'main.dart';
 import 'Session.dart';
+import 'package:external_app_launcher/external_app_launcher.dart';
 
 class init_Dashboardv7 extends StatelessWidget {
   @override
@@ -42,10 +43,10 @@ class Dashboardv7 extends StatefulWidget {
   const Dashboardv7({Key? key}) : super(key: key);
   // const Dashboardv7();
   @override
-  State<Dashboardv7> createState() => _Dashboardv6();
+  State<Dashboardv7> createState() => _Dashboardv7();
 }
 
-class _Dashboardv6 extends State<Dashboardv7> {
+class _Dashboardv7 extends State<Dashboardv7> {
   final box = GetStorage();
   Session session = Session();
   int mode = 0;
@@ -108,6 +109,10 @@ class _Dashboardv6 extends State<Dashboardv7> {
           "token": token,
           "state": state
         }));
+    // debugPrint(jsonEncode(res));
+    if (!res['session']) {
+      goBackLogin();
+    }
     // return response.body;
     return jsonEncode(res);
   }
@@ -133,16 +138,33 @@ class _Dashboardv6 extends State<Dashboardv7> {
 
     var res = await session.post("https://iot.tigamas.com/api/app/action",
         jsonEncode(<String, String>{"action": "getStatus", "token": token}));
-    setState(() {
-      rVal = res['dataValue'].cast<int>();
-      rNama = res['dataName'].cast<String>();
-      rIconPath = res['dataIcon'].cast<String>();
-      shortcutSiang = res['shortcutSiang'].cast<int>();
-      shortcutMalam = res['shortcutMalam'].cast<int>();
-      shortcutPergi = res['shortcutPergi'].cast<int>();
-    });
+    // debugPrint(jsonEncode(res));
+    if (res['session']) {
+      setState(() {
+        rVal = res['dataValue'].cast<int>();
+        rNama = res['dataName'].cast<String>();
+        rIconPath = res['dataIcon'].cast<String>();
+        shortcutSiang = res['shortcutSiang'].cast<int>();
+        shortcutMalam = res['shortcutMalam'].cast<int>();
+        shortcutPergi = res['shortcutPergi'].cast<int>();
+      });
+    } else {
+      // Re login
+      goBackLogin();
+    }
     // return response.body;
     return jsonEncode(res);
+  }
+
+  void goBackLogin() async {
+    String token = box.read('token').toString();
+    var res = await session.post("https://iot.tigamas.com/api/app/action",
+        jsonEncode(<String, String>{"action": "logout", "token": token}));
+    box.remove('token');
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => MyApp()),
+    );
   }
 
   void shortcutRelay(String whatshortcut) {
@@ -194,6 +216,8 @@ class _Dashboardv6 extends State<Dashboardv7> {
         return 'assets/images/cog.svg';
       case "chat":
         return 'assets/images/message.svg';
+      case "cctv":
+        return 'assets/images/cctv.svg';
       default:
         debugPrint(whaticon);
         return 'assets/images/lightning.svg';
@@ -234,17 +258,37 @@ class _Dashboardv6 extends State<Dashboardv7> {
         child: Padding(
             padding: const EdgeInsets.only(
               left: 0,
-              top: 0,
+              top: 10,
               right: 0,
               bottom: 0,
             ),
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 // Expanded(
                 //   child: Image.asset("assets/images/logo_tigamas2.png"),
                 // ),
                 const Expanded(
                   child: Text(""),
+                ),
+                InkWell(
+                  onTap: () async {
+                    await LaunchApp.openApp(
+                      androidPackageName: 'com.mobile.myeye',
+                      iosUrlScheme: 'xmeye://',
+                      appStoreLink:
+                          'itms-apps://itunes.apple.com/us/app/xmeye/id884006786',
+                      // openStore: false
+                    );
+                  },
+                  child: SizedBox(
+                      height: 40,
+                      width: 40,
+                      child: SvgPicture.asset(getIcon("cctv"),
+                          color: Colors.amber)),
+                ),
+                const SizedBox(
+                  width: 10,
                 ),
                 InkWell(
                   onTap: () {
@@ -258,6 +302,9 @@ class _Dashboardv6 extends State<Dashboardv7> {
                       width: 40,
                       child: SvgPicture.asset(getIcon("chat"),
                           color: Colors.amber)),
+                ),
+                const SizedBox(
+                  width: 5,
                 ),
                 InkWell(
                   onTap: () {
@@ -274,14 +321,13 @@ class _Dashboardv6 extends State<Dashboardv7> {
                         color: Colors.amber,
                       )),
                 ),
+                // const SizedBox(
+                //   width: 5,
+                // ),
                 InkWell(
                   onTap: () {
                     // Log Out
-                    box.remove('token');
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => MyApp()),
-                    );
+                    goBackLogin();
                   },
                   child: SizedBox(
                       height: 40,
@@ -289,9 +335,9 @@ class _Dashboardv6 extends State<Dashboardv7> {
                       child: SvgPicture.asset(getIcon("logout"),
                           color: Colors.amber)),
                 ),
-                const SizedBox(
-                  width: 50,
-                )
+                // const SizedBox(
+                //   width: 10,
+                // )
               ],
             )),
       ),
@@ -511,6 +557,7 @@ class _Dashboardv6 extends State<Dashboardv7> {
         ),
       ),
       GridView.builder(
+          physics: const NeverScrollableScrollPhysics(),
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
           ),
