@@ -10,6 +10,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 import 'Dashboardv7.dart';
+import 'Session.dart';
 
 class QRViewExample extends StatefulWidget {
   const QRViewExample({Key? key}) : super(key: key);
@@ -23,6 +24,7 @@ class _QRViewExampleState extends State<QRViewExample> {
   QRViewController? controller;
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   final box = GetStorage();
+  Session session = Session();
 
   // In order to get hot reload to work we need to pause the camera if the platform
   // is android, or resume the camera if the platform is iOS.
@@ -37,35 +39,43 @@ class _QRViewExampleState extends State<QRViewExample> {
 
   Future<dynamic> dologinQR(String token) async {
     var res;
-    await http
-        .post(
-      Uri.parse('https://iot.tigamas.com/api/app/loginQR'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode(<String, String>{'token': token}),
-    )
-        .then((http.Response response) {
-      // final int statusCode = response.statusCode;
-      // print("====response ${response.body.toString()}");
-      res = jsonDecode(response.body);
-      // print(res);
-      if (res["msg"] == "success") {
-        box.write('token', res["token"]);
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => init_Dashboardv7()),
-        );
-        // print("doLogin");
-      } else {
-        //Wrong password
-      }
-      // if (statusCode < 200 || statusCode >= 400 || json == null) {
-      //   print(jsonDecode(response.body)["message"]);
-      // }
-      // return response.body;
-    });
-    return res;
+    // await http
+    //     .post(
+    //   Uri.parse('https://iot.tigamas.com/api/app/loginQR'),
+    //   headers: <String, String>{
+    //     'Content-Type': 'application/json; charset=UTF-8',
+    //   },
+    //   body: jsonEncode(<String, String>{'token': token}),
+    // )
+    //     .then((http.Response response) {
+    //   // final int statusCode = response.statusCode;
+    //   // print("====response ${response.body.toString()}");
+    //   res = jsonDecode(response.body);
+    //   // print(res);
+    //   if (res["msg"] == "success") {
+    //     box.write('token', res["token"]);
+    //     Navigator.push(
+    //       context,
+    //       MaterialPageRoute(builder: (context) => init_Dashboardv7()),
+    //     );
+    //   } else {
+    //     //Wrong password
+    //   }
+    //   // if (statusCode < 200 || statusCode >= 400 || json == null) {
+    //   //   print(jsonDecode(response.body)["message"]);
+    //   // }
+    //   // return response.body;
+    // });
+    res = await session.post('https://iot.tigamas.com/api/app/loginQR',
+        jsonEncode(<String, String>{'token': token}));
+    if (res["msg"] == "success") {
+      box.write('token', res["token"]);
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => init_Dashboardv7()),
+      );
+    }
+    return jsonEncode(res);
   }
 
   bool forOnce = true;

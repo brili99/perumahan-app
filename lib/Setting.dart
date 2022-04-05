@@ -18,6 +18,7 @@ import 'package:http/http.dart' as http;
 import 'package:get_storage/get_storage.dart';
 import 'package:flutter/cupertino.dart';
 
+import 'Session.dart';
 import 'column_builder.dart';
 import 'package:flutter_iconpicker/flutter_iconpicker.dart';
 import 'icon_cust_icons.dart';
@@ -50,6 +51,7 @@ enum ModeOtomatisLampu { nyala, mati }
 
 class _Setting extends State<Setting> {
   final box = GetStorage();
+  Session session = Session();
   ModeOtomatisLampu? _character;
 
   List<TextEditingController> ctrlTxtInput =
@@ -166,25 +168,43 @@ class _Setting extends State<Setting> {
   }
 
   void uploadSetting(String token) async {
-    var response = await http.post(
-      Uri.parse("https://iot.tigamas.com/api/app/action"),
-      headers: {"Content-Type": "application/json"},
-      body: jsonEncode(<String, dynamic>{
-        "action": "uploadSetting",
-        "token": token,
-        "nama_relay": nama_relay,
-        "icon_relay": icon_str_relay,
-        "shortcutSiang": shortcutSiang,
-        "shortcutMalam": shortcutMalam,
-        "shortcutPergi": shortcutPergi,
-      }),
-    );
-    var status = json.decode(response.body)['msg'];
-    if (status == "success") {
+    // var response = await http.post(
+    //   Uri.parse("https://iot.tigamas.com/api/app/action"),
+    //   headers: {"Content-Type": "application/json"},
+    //   body: jsonEncode(<String, dynamic>{
+    //     "action": "uploadSetting",
+    //     "token": token,
+    //     "nama_relay": nama_relay,
+    //     "icon_relay": icon_str_relay,
+    //     "shortcutSiang": shortcutSiang,
+    //     "shortcutMalam": shortcutMalam,
+    //     "shortcutPergi": shortcutPergi,
+    //   }),
+    // );
+    // var status = json.decode(response.body)['msg'];
+    // if (status == "success") {
+    //   debugPrint("Berhasil upload setting");
+    //   Restart.restartApp();
+    // } else {
+    //   debugPrint(response.body);
+    // }
+
+    var res = await session.post(
+        'https://iot.tigamas.com/api/app/loginQR',
+        jsonEncode(<String, dynamic>{
+          "action": "uploadSetting",
+          "token": token,
+          "nama_relay": nama_relay,
+          "icon_relay": icon_str_relay,
+          "shortcutSiang": shortcutSiang,
+          "shortcutMalam": shortcutMalam,
+          "shortcutPergi": shortcutPergi,
+        }));
+    if (res["msg"] == "success") {
       debugPrint("Berhasil upload setting");
       Restart.restartApp();
     } else {
-      debugPrint(response.body);
+      debugPrint(jsonEncode(res));
     }
   }
 
@@ -193,28 +213,46 @@ class _Setting extends State<Setting> {
   List<int> shortcutPergi = List.generate(8, (i) => 0);
 
   void getSetting(String token) async {
-    var response = await http.post(
-      Uri.parse("https://iot.tigamas.com/api/app/action"),
-      headers: {"Content-Type": "application/json"},
-      body:
-          jsonEncode(<String, String>{"action": "getSetting", "token": token}),
-    );
-    var data = json.decode(response.body);
-    // debugPrint(data);
-    var status = data['msg'];
-    if (status == "success") {
-      // print(data['icon_relay']);
-      data['icon_relay'] = data['icon_relay'].cast<String>();
-      // List<String> iconRelay = data['icon_relay'];
+    // var response = await http.post(
+    //   Uri.parse("https://iot.tigamas.com/api/app/action"),
+    //   headers: {"Content-Type": "application/json"},
+    //   body:
+    //       jsonEncode(<String, String>{"action": "getSetting", "token": token}),
+    // );
+    // var data = json.decode(response.body);
+    // // debugPrint(data);
+    // var status = data['msg'];
+    // if (status == "success") {
+    //   // print(data['icon_relay']);
+    //   data['icon_relay'] = data['icon_relay'].cast<String>();
+    //   // List<String> iconRelay = data['icon_relay'];
+    //   for (var i = 0; i < 8; i++) {
+    //     icon_relay[i] = strToIconCust(data['icon_relay'][i].toString());
+    //   }
+    //   setState(() {
+    //     nama_relay = data['nama_relay'].cast<String>();
+    //     icon_str_relay = data['icon_relay'];
+    //     shortcutSiang = data['shortcutSiang'].cast<int>();
+    //     shortcutMalam = data['shortcutMalam'].cast<int>();
+    //     shortcutPergi = data['shortcutPergi'].cast<int>();
+    //   });
+    // } else {
+    //   debugPrint("ada yang salah");
+    // }
+
+    var res = await session.post('https://iot.tigamas.com/api/app/loginQR',
+        jsonEncode(<String, String>{"action": "getSetting", "token": token}));
+    if (res["msg"] == "success") {
+      res['icon_relay'] = res['icon_relay'].cast<String>();
       for (var i = 0; i < 8; i++) {
-        icon_relay[i] = strToIconCust(data['icon_relay'][i].toString());
+        icon_relay[i] = strToIconCust(res['icon_relay'][i].toString());
       }
       setState(() {
-        nama_relay = data['nama_relay'].cast<String>();
-        icon_str_relay = data['icon_relay'];
-        shortcutSiang = data['shortcutSiang'].cast<int>();
-        shortcutMalam = data['shortcutMalam'].cast<int>();
-        shortcutPergi = data['shortcutPergi'].cast<int>();
+        nama_relay = res['nama_relay'].cast<String>();
+        icon_str_relay = res['icon_relay'];
+        shortcutSiang = res['shortcutSiang'].cast<int>();
+        shortcutMalam = res['shortcutMalam'].cast<int>();
+        shortcutPergi = res['shortcutPergi'].cast<int>();
       });
     } else {
       debugPrint("ada yang salah");

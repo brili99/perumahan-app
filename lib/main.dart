@@ -389,7 +389,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
         MaterialPageRoute(builder: (context) => init_Dashboardv7()),
       );
     }
-    return res;
+    return jsonEncode(res);
   }
 }
 

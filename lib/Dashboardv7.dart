@@ -20,6 +20,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:tigamas_app/Setting.dart';
 import 'Chat.dart';
 import 'main.dart';
+import 'Session.dart';
 
 class init_Dashboardv7 extends StatelessWidget {
   @override
@@ -46,6 +47,7 @@ class Dashboardv7 extends StatefulWidget {
 
 class _Dashboardv6 extends State<Dashboardv7> {
   final box = GetStorage();
+  Session session = Session();
   int mode = 0;
   List<int> rVal = [99, 99, 99, 99, 99, 99, 99, 99];
   List<String> rIconPath = [
@@ -87,38 +89,60 @@ class _Dashboardv6 extends State<Dashboardv7> {
   }
 
   setStateRelay(String token, String relay, String state) async {
-    var response = await http.post(
-      Uri.parse("https://iot.tigamas.com/api/app/action"),
-      headers: {"Content-Type": "application/json"},
-      body: jsonEncode(<String, String>{
-        "action": "setStatusRelay",
-        "relay": relay,
-        "token": token,
-        "state": state
-      }),
-    );
-    return response.body;
+    // var response = await http.post(
+    //   Uri.parse("https://iot.tigamas.com/api/app/action"),
+    //   headers: {"Content-Type": "application/json"},
+    //   body: jsonEncode(<String, String>{
+    //     "action": "setStatusRelay",
+    //     "relay": relay,
+    //     "token": token,
+    //     "state": state
+    //   }),
+    // );
+
+    var res = await session.post(
+        "https://iot.tigamas.com/api/app/action",
+        jsonEncode(<String, String>{
+          "action": "setStatusRelay",
+          "relay": relay,
+          "token": token,
+          "state": state
+        }));
+    // return response.body;
+    return jsonEncode(res);
   }
 
   getStatus(String token) async {
-    var response = await http.post(
-      Uri.parse("https://iot.tigamas.com/api/app/action"),
-      headers: {"Content-Type": "application/json"},
-      body: jsonEncode(<String, String>{
-        "action": "getStatus",
-        "token": token,
-      }),
-    );
+    // var response = await http.post(
+    //   Uri.parse("https://iot.tigamas.com/api/app/action"),
+    //   headers: {"Content-Type": "application/json"},
+    //   body: jsonEncode(<String, String>{
+    //     "action": "getStatus",
+    //     "token": token,
+    //   }),
+    // );
+
+    // setState(() {
+    //   rVal = json.decode(response.body)['dataValue'].cast<int>();
+    //   rNama = json.decode(response.body)['dataName'].cast<String>();
+    //   rIconPath = json.decode(response.body)['dataIcon'].cast<String>();
+    //   shortcutSiang = json.decode(response.body)['shortcutSiang'].cast<int>();
+    //   shortcutMalam = json.decode(response.body)['shortcutMalam'].cast<int>();
+    //   shortcutPergi = json.decode(response.body)['shortcutPergi'].cast<int>();
+    // });
+
+    var res = await session.post("https://iot.tigamas.com/api/app/action",
+        jsonEncode(<String, String>{"action": "getStatus", "token": token}));
     setState(() {
-      rVal = json.decode(response.body)['dataValue'].cast<int>();
-      rNama = json.decode(response.body)['dataName'].cast<String>();
-      rIconPath = json.decode(response.body)['dataIcon'].cast<String>();
-      shortcutSiang = json.decode(response.body)['shortcutSiang'].cast<int>();
-      shortcutMalam = json.decode(response.body)['shortcutMalam'].cast<int>();
-      shortcutPergi = json.decode(response.body)['shortcutPergi'].cast<int>();
+      rVal = res['dataValue'].cast<int>();
+      rNama = res['dataName'].cast<String>();
+      rIconPath = res['dataIcon'].cast<String>();
+      shortcutSiang = res['shortcutSiang'].cast<int>();
+      shortcutMalam = res['shortcutMalam'].cast<int>();
+      shortcutPergi = res['shortcutPergi'].cast<int>();
     });
-    // print(rVal);
-    return response.body;
+    // return response.body;
+    return jsonEncode(res);
   }
 
   void shortcutRelay(String whatshortcut) {
