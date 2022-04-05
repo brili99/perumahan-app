@@ -21,10 +21,15 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 // import 'Dashboard.dart';
 import 'package:get_storage/get_storage.dart';
 import 'Dashboardv7.dart';
+import 'DeviceInfo.dart';
 import 'QRViewExample.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:device_info_plus/device_info_plus.dart';
+import 'Session.dart';
 
+// import 'package:dio/dio.dart';
+// import 'package:dio_cookie_manager/dio_cookie_manager.dart';
+// import 'package:cookie_jar/cookie_jar.dart';
 void main() async {
   await GetStorage.init();
   GetStorage box = GetStorage();
@@ -44,6 +49,7 @@ class MyApp extends StatelessWidget {
   MyApp({Key? key}) : super(key: key);
 
   static const String _title = 'Perumahan App';
+
   // final box = GetStorage();
   @override
   Widget build(BuildContext context) {
@@ -81,26 +87,39 @@ class MyStatefulWidget extends StatefulWidget {
 class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   TextEditingController nameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
-
   String barcode = "";
   String message = "";
 
   // String barcode = "";
 
   final box = GetStorage();
+  Session session = Session();
+  // var dio = Dio();
+  // var cookieJar = CookieJar();
+  // dio.interceptors.add(CookieManager(cookieJar));
+  // Future<String> getId() async {
+  //   debugPrint("getId()");
+  //   var deviceInfo = DeviceInfoPlugin();
+  //   if (Platform.isIOS) {
+  //     // import 'dart:io'
+  //     var iosDeviceInfo = await deviceInfo.iosInfo;
+  //     debugPrint("isIos");
+  //     return iosDeviceInfo.identifierForVendor.toString(); // unique ID on iOS
+  //   } else if (Platform.isAndroid) {
+  //     var androidDeviceInfo = await deviceInfo.androidInfo;
+  //     debugPrint("isAndroid");
+  //     return androidDeviceInfo.androidId.toString(); // unique ID on Android
+  //   } else {
+  //     debugPrint("isNonIosAndroid");
+  //     return "NonIosAndroid";
+  //   }
+  // }
 
-  Future<String> getId() async {
-    var deviceInfo = DeviceInfoPlugin();
-    if (Platform.isIOS) {
-      // import 'dart:io'
-      var iosDeviceInfo = await deviceInfo.iosInfo;
-      return iosDeviceInfo.identifierForVendor.toString(); // unique ID on iOS
-    } else if (Platform.isAndroid) {
-      var androidDeviceInfo = await deviceInfo.androidInfo;
-      return androidDeviceInfo.androidId.toString(); // unique ID on Android
-    } else {
-      return "NonIosAndroid";
-    }
+  String? sessionApi = "";
+
+  @override
+  void initState() {
+    super.initState();
   }
 
   @override
@@ -260,70 +279,116 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
 
   Future<dynamic> dologin(String user, String pass) async {
     var res;
-    await http
-        .post(
-      Uri.parse('https://iot.tigamas.com/api/app/login'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode(<String, String>{
-        'user': user,
-        'pass': pass,
-        'deviceId': getId().toString()
-      }),
-    )
-        .then((http.Response response) {
-      // final int statusCode = response.statusCode;
-      // print("====response ${response.body.toString()}");
-      res = jsonDecode(response.body);
-      if (res["msg"] == "success") {
-        box.write('token', res["token"]);
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => init_Dashboardv7()),
-        );
-      } else if (res["msg"] == "wrong") {
-        //Wrong password
-      } else if (res["msg"] == "NotPass") {
-        //No more user available
-      }
-      // if (statusCode < 200 || statusCode >= 400 || json == null) {
-      //   print(jsonDecode(response.body)["message"]);
-      // }
-      // return response.body;
-    });
+    // await http
+    //     .post(
+    //   Uri.parse('https://iot.tigamas.com/api/app/login'),
+    //   headers: <String, String>{
+    //     'Content-Type': 'application/json; charset=UTF-8',
+    //   },
+    //   body: jsonEncode(<String, String>{'user': user, 'pass': pass}),
+    // )
+    //     .then((http.Response response) {
+    //   // final int statusCode = response.statusCode;
+    //   // print("====response ${response.body.toString()}");
+    //   res = jsonDecode(response.body);
+    //   debugPrint(response.body);
+    //   debugPrint(sessionApi);
+    // if (res["msg"] == "success") {
+    //   box.write('token', res["token"]);
+    //   Navigator.push(
+    //     context,
+    //     MaterialPageRoute(builder: (context) => init_Dashboardv7()),
+    //   );
+    // } else if (res["msg"] == "wrong") {
+    //   //Wrong password
+    // } else if (res["msg"] == "NotPass") {
+    //   //No more user available
+    // }
+    //   // if (statusCode < 200 || statusCode >= 400 || json == null) {
+    //   //   print(jsonDecode(response.body)["message"]);
+    //   // }
+    //   // return response.body;
+    // });
+
+    res = await session.post('https://iot.tigamas.com/api/app/login',
+        jsonEncode(<String, String>{'user': user, 'pass': pass}));
+    // debugPrint(res['sess_id']);
+    // print(res);
+    if (res["msg"] == "success") {
+      box.write('token', res["token"]);
+      // box.write('session', res["sess_id"]);
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => init_Dashboardv7()),
+      );
+    } else if (res["msg"] == "wrong") {
+      //Wrong password
+      debugPrint("Salah password atau user");
+    } else if (res["msg"] == "NotPass") {
+      //No more user available
+    }
+
+    // final response = await dio.post('https://iot.tigamas.com/api/app/login',
+    //     data: jsonEncode(<String, String>{'user': user, 'pass': pass}));
+    // print(response.headers);
+    // print(response.data);
+    // res = jsonDecode(response.data.toString());
+    // print(res);
+    // if (res["msg"] == "success") {
+    //   box.write('token', res["token"]);
+    //   box.write('session', res["sess_id"]);
+    //   Navigator.push(
+    //     context,
+    //     MaterialPageRoute(builder: (context) => init_Dashboardv7()),
+    //   );
+    // } else if (res["msg"] == "wrong") {
+    //   //Wrong password
+    //   debugPrint("Salah password atau user");
+    // } else if (res["msg"] == "NotPass") {
+    //   //No more user available
+    // }
+
     return res;
   }
 
   Future<dynamic> dologinQR(String token) async {
     var res;
-    await http
-        .post(
-      Uri.parse('https://iot.tigamas.com/api/app/loginQR'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode(<String, String>{'token': token}),
-    )
-        .then((http.Response response) {
-      // final int statusCode = response.statusCode;
-      // print("====response ${response.body.toString()}");
-      res = jsonDecode(response.body);
-      print(res);
-      if (res["msg"] == "success") {
-        box.write('token', res["token"]);
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => init_Dashboardv7()),
-        );
-      } else {
-        //Wrong password
-      }
-      // if (statusCode < 200 || statusCode >= 400 || json == null) {
-      //   print(jsonDecode(response.body)["message"]);
-      // }
-      // return response.body;
-    });
+    // await http
+    //     .post(
+    //   Uri.parse('https://iot.tigamas.com/api/app/loginQR'),
+    //   headers: <String, String>{
+    //     'Content-Type': 'application/json; charset=UTF-8',
+    //   },
+    //   body: jsonEncode(<String, String>{'token': token}),
+    // )
+    //     .then((http.Response response) {
+    //   // final int statusCode = response.statusCode;
+    //   // print("====response ${response.body.toString()}");
+    //   res = jsonDecode(response.body);
+    //   // print(res);
+    //   if (res["msg"] == "success") {
+    //     box.write('token', res["token"]);
+    //     Navigator.push(
+    //       context,
+    //       MaterialPageRoute(builder: (context) => init_Dashboardv7()),
+    //     );
+    //   } else {
+    //     //Wrong password
+    //   }
+    //   // if (statusCode < 200 || statusCode >= 400 || json == null) {
+    //   //   print(jsonDecode(response.body)["message"]);
+    //   // }
+    //   // return response.body;
+    // });
+    res = await session.post('https://iot.tigamas.com/api/app/loginQR',
+        jsonEncode(<String, String>{'token': token}));
+    if (res["msg"] == "success") {
+      box.write('token', res["token"]);
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => init_Dashboardv7()),
+      );
+    }
     return res;
   }
 }
