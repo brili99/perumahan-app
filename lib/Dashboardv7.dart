@@ -144,9 +144,15 @@ class _Dashboardv7 extends State<Dashboardv7> {
         rVal = res['dataValue'].cast<int>();
         rNama = res['dataName'].cast<String>();
         rIconPath = res['dataIcon'].cast<String>();
-        shortcutSiang = res['shortcutSiang'].cast<int>();
-        shortcutMalam = res['shortcutMalam'].cast<int>();
-        shortcutPergi = res['shortcutPergi'].cast<int>();
+        if (res['shortcutSiang'].length == 8) {
+          shortcutSiang = res['shortcutSiang'].cast<int>();
+        }
+        if (res['shortcutMalam'].length == 8) {
+          shortcutMalam = res['shortcutMalam'].cast<int>();
+        }
+        if (res['shortcutPergi'].length == 8) {
+          shortcutPergi = res['shortcutPergi'].cast<int>();
+        }
       });
     } else {
       // Re login

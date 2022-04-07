@@ -205,8 +205,10 @@ class _Setting extends State<Setting> {
     if (!res['session']) {
       goBackLogin();
     } else if (res["msg"] == "success") {
-      debugPrint("Berhasil upload setting");
-      Restart.restartApp();
+      setState(() {
+        debugPrint("Berhasil upload setting");
+        Restart.restartApp();
+      });
     } else {
       debugPrint(jsonEncode(res));
     }
@@ -332,10 +334,11 @@ class _Setting extends State<Setting> {
                   ElevatedButton(
                     child: const Text("Simpan"),
                     onPressed: () {
-                      setState(() {});
+                      setState(() {
+                        uploadSetting(token);
+                      });
                       // print(icon_str_relay);
                       // print(nama_relay);
-                      uploadSetting(token);
                     },
                   )
                 ],
