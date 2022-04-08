@@ -224,6 +224,8 @@ class _Dashboardv7 extends State<Dashboardv7> {
         return 'assets/images/message.svg';
       case "cctv":
         return 'assets/images/cctv.svg';
+      case "lock":
+        return 'assets/images/lock.svg';
       default:
         debugPrint(whaticon);
         return 'assets/images/lightning.svg';
@@ -280,12 +282,11 @@ class _Dashboardv7 extends State<Dashboardv7> {
                 InkWell(
                   onTap: () async {
                     await LaunchApp.openApp(
-                      androidPackageName: 'com.mobile.myeye',
-                      iosUrlScheme: 'xmeye://',
-                      appStoreLink:
-                          'itms-apps://itunes.apple.com/us/app/xmeye/id884006786',
-                      // openStore: false
-                    );
+                        androidPackageName: 'com.mobile.myeye',
+                        iosUrlScheme: 'xmeye://',
+                        appStoreLink:
+                            'itms-apps://itunes.apple.com/us/app/xmeye/id884006786',
+                        openStore: false);
                   },
                   child: SizedBox(
                       height: 40,

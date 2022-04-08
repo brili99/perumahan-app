@@ -1,4 +1,4 @@
-package com.example.tigamas_app
+package com.pcbjogja.tigamas_app
 
 import io.flutter.embedding.android.FlutterActivity
 

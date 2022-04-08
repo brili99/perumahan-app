@@ -26,4 +26,5 @@ class IconCust {
   static const IconData lamp = IconData(0xe802, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData message = IconData(0xe803, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData tv = IconData(0xe804, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData lock = IconData(0xe805, fontFamily: _kFontFam, fontPackage: _kFontPkg);
 }

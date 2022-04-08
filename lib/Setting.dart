@@ -114,20 +114,23 @@ class _Setting extends State<Setting> {
         return IconCust.message;
       case "tv":
         return IconCust.tv;
+      case "lock":
+        return IconCust.lock;
       default:
         return IconCust.lamp;
     }
   }
 
-  List<SvgPicture> icons_svg_relay = [
-    SvgPicture.asset('assets/images/air-conditioner.svg'),
-    SvgPicture.asset('assets/images/lamp.svg'),
-    SvgPicture.asset('assets/images/tv.svg'),
-    SvgPicture.asset('assets/images/logout.svg'),
-    SvgPicture.asset('assets/images/cog.svg'),
-    SvgPicture.asset('assets/images/message.svg'),
-    SvgPicture.asset('assets/images/lightning.svg'),
-  ];
+  // List<SvgPicture> icons_svg_relay = [
+  //   SvgPicture.asset('assets/images/air-conditioner.svg'),
+  //   SvgPicture.asset('assets/images/lamp.svg'),
+  //   SvgPicture.asset('assets/images/tv.svg'),
+  //   SvgPicture.asset('assets/images/logout.svg'),
+  //   SvgPicture.asset('assets/images/cog.svg'),
+  //   SvgPicture.asset('assets/images/message.svg'),
+  //   SvgPicture.asset('assets/images/lightning.svg'),
+  //   SvgPicture.asset('assets/images/lock.svg'),
+  // ];
 
   Map<String, IconData> myCustomIcons = {
     'air_conditioner': IconCust.air_conditioner,
@@ -135,6 +138,7 @@ class _Setting extends State<Setting> {
     'tv': IconCust.tv,
     'cog': IconCust.cog,
     'message': IconCust.message,
+    'lock': IconCust.lock,
   };
 
   _pickIcon(int index) async {
@@ -162,6 +166,8 @@ class _Setting extends State<Setting> {
           icon_str_relay[index] = "chat";
         } else if (icon.toString() == "IconData(U+0E804)") {
           icon_str_relay[index] = "tv";
+        } else if (icon.toString() == "IconData(U+0E805)") {
+          icon_str_relay[index] = "lock";
         }
       });
       // debugPrint('Picked Icon:  $icon ');
