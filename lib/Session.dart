@@ -33,11 +33,11 @@ class Session {
 
   void updateCookie(http.Response response) {
     String? rawCookie = response.headers['set-cookie'];
-    if (rawCookie == null) {
-      rawCookie = jsonDecode(response.body)['set-cookie'];
-    }
+    // if (rawCookie == null) {
+    //   rawCookie = jsonDecode(response.body)['set-cookie'];
+    // }
     if (rawCookie != null) {
-      debugPrint("Cookie found! nice!");
+      debugPrint("Cookie found, nice!");
       int index = rawCookie.indexOf(';');
       headers['cookie'] =
           (index == -1) ? rawCookie : rawCookie.substring(0, index);

@@ -84,6 +84,8 @@ class _Dashboardv7 extends State<Dashboardv7> {
         return Colors.amber;
       case "tv":
         return const Color.fromRGBO(184, 26, 183, 1);
+      case "lock":
+        return Color.fromARGB(255, 187, 16, 16);
       default:
         return Colors.amber;
     }
@@ -252,8 +254,9 @@ class _Dashboardv7 extends State<Dashboardv7> {
           color: Color.fromARGB(255, 250, 250, 250),
           image: DecorationImage(
               alignment: Alignment.topCenter,
-              image: AssetImage("assets/images/bg_menu.png"),
-              fit: BoxFit.fitWidth),
+              // image: AssetImage("assets/images/bg_menu.png"),
+              image: AssetImage("assets/images/logo_IG.png"),
+              fit: BoxFit.fitHeight),
           //     gradient: LinearGradient(
           //   begin: Alignment.bottomCenter,
           //   end: Alignment.topCenter,
