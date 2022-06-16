@@ -253,10 +253,10 @@ class _Dashboardv7 extends State<Dashboardv7> {
         decoration: const BoxDecoration(
           color: Color.fromARGB(255, 250, 250, 250),
           image: DecorationImage(
-              alignment: Alignment.topLeft,
-              // image: AssetImage("assets/images/bg_menu.png"),
-              image: AssetImage("assets/images/logo_IG.png"),
-              fit: BoxFit.fitHeight),
+              alignment: Alignment.topCenter,
+              image: AssetImage("assets/images/bg_menu.png"),
+              // image: AssetImage("assets/images/logo_IG.png"),
+              fit: BoxFit.fitWidth),
           //     gradient: LinearGradient(
           //   begin: Alignment.bottomCenter,
           //   end: Alignment.topCenter,
