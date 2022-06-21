@@ -9,7 +9,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-import 'Dashboardv7.dart';
+import 'Dashboardv8.dart';
 import 'Session.dart';
 
 class QRViewExample extends StatefulWidget {
@@ -56,7 +56,7 @@ class _QRViewExampleState extends State<QRViewExample> {
     //     box.write('token', res["token"]);
     //     Navigator.push(
     //       context,
-    //       MaterialPageRoute(builder: (context) => init_Dashboardv7()),
+    //       MaterialPageRoute(builder: (context) => init_Dashboardv8()),
     //     );
     //   } else {
     //     //Wrong password
@@ -72,7 +72,7 @@ class _QRViewExampleState extends State<QRViewExample> {
       box.write('token', res["token"]);
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => init_Dashboardv7()),
+        MaterialPageRoute(builder: (context) => init_Dashboardv8()),
       );
     }
     return jsonEncode(res);

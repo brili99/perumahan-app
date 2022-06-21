@@ -96,6 +96,30 @@ flutter:
     - assets/images/message.svg
     - assets/images/lock.svg
     - assets/images/cog.svg
+    - assets/imagesv2/backgorund.png
+    - assets/imagesv2/banner.png
+    - assets/imagesv2/pergi putih.png
+    - assets/imagesv2/pergi kuning.png
+    - assets/imagesv2/malam putih.png
+    - assets/imagesv2/malam kuning.png
+    - assets/imagesv2/siang putih.png
+    - assets/imagesv2/siang kuning.png
+    - assets/imagesv2/mail kuning.png
+    - assets/imagesv2/mail putih.png
+    - assets/imagesv2/setting.png
+    - assets/imagesv2/keluar.png
+    - assets/imagesv2/setting.png
+    - assets/imagesv2/ac kuning.png
+    - assets/imagesv2/ac putih.png
+    - assets/imagesv2/cctv kuning.png
+    - assets/imagesv2/cctv putih.png
+    - assets/imagesv2/gembok kuning.png
+    - assets/imagesv2/gembok putih.png
+    - assets/imagesv2/tv kuning.png
+    - assets/imagesv2/tv putih.png
+    - assets/imagesv2/wifi kuning.png
+    - assets/imagesv2/wifi putih.png
+    - assets/imagesv2/logo graha mas.png
   #   - images/a_dot_ham.jpeg
   fonts:
     - family: IconCust
