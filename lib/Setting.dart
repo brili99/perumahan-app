@@ -106,12 +106,12 @@ class _Setting extends State<Setting> {
     switch (waticon) {
       case "ac":
         return IconCust.air_conditioner;
-      case "setting":
-        return IconCust.cog;
+      // case "setting":
+      //   return IconCust.cog;
       case "lamp":
         return IconCust.lamp;
-      case "chat":
-        return IconCust.message;
+      // case "chat":
+      //   return IconCust.message;
       case "tv":
         return IconCust.tv;
       case "lock":
@@ -136,8 +136,8 @@ class _Setting extends State<Setting> {
     'air_conditioner': IconCust.air_conditioner,
     'lamp': IconCust.lamp,
     'tv': IconCust.tv,
-    'cog': IconCust.cog,
-    'message': IconCust.message,
+    // 'cog': IconCust.cog,
+    // 'message': IconCust.message,
     'lock': IconCust.lock,
   };
 
@@ -158,12 +158,12 @@ class _Setting extends State<Setting> {
         // icon_str_relay[index] = icon.toString();
         if (icon.toString() == "IconData(U+0E800)") {
           icon_str_relay[index] = "ac";
-        } else if (icon.toString() == "IconData(U+0E801)") {
-          icon_str_relay[index] = "setting";
+          // } else if (icon.toString() == "IconData(U+0E801)") {
+          //   icon_str_relay[index] = "setting";
         } else if (icon.toString() == "IconData(U+0E802)") {
           icon_str_relay[index] = "lamp";
-        } else if (icon.toString() == "IconData(U+0E803)") {
-          icon_str_relay[index] = "chat";
+          // } else if (icon.toString() == "IconData(U+0E803)") {
+          //   icon_str_relay[index] = "chat";
         } else if (icon.toString() == "IconData(U+0E804)") {
           icon_str_relay[index] = "tv";
         } else if (icon.toString() == "IconData(U+0E805)") {
@@ -462,6 +462,9 @@ class _Setting extends State<Setting> {
                               ),
                               child: TextFormField(
                                 controller: ctrlTxtInput[index],
+                                inputFormatters: [
+                                  LengthLimitingTextInputFormatter(8),
+                                ],
                                 onChanged: (newVal) {
                                   nama_relay[index] = newVal;
                                 },

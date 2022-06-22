@@ -17,6 +17,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:get_storage/get_storage.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:restart_app/restart_app.dart';
 import 'package:tigamas_app/Setting.dart';
 import 'Chat.dart';
 import 'main.dart';
@@ -49,7 +50,7 @@ class Dashboardv8 extends StatefulWidget {
 class _Dashboardv8 extends State<Dashboardv8> {
   final box = GetStorage();
   Session session = Session();
-
+  String token = "";
   String userName = "john";
   int statusDeviceOnline = 1;
   int statusPesanMasuk = 1;
@@ -77,24 +78,121 @@ class _Dashboardv8 extends State<Dashboardv8> {
     "Relay 8",
   ];
 
+  List<int> shortcutSiang = List.generate(8, (i) => 0);
+  List<int> shortcutMalam = List.generate(8, (i) => 0);
+  List<int> shortcutPergi = List.generate(8, (i) => 0);
+
+  void shortcutRelay(String whatshortcut) {
+    String token = box.read('token').toString();
+    switch (whatshortcut) {
+      case "siang":
+        setState(() {
+          for (var i = 0; i < shortcutSiang.length; i++) {
+            setStateRelay(
+                token, (i + 1).toString(), shortcutSiang[i].toString());
+          }
+          relayValue = shortcutSiang;
+        });
+        break;
+      case "malam":
+        setState(() {
+          for (var i = 0; i < shortcutMalam.length; i++) {
+            setStateRelay(
+                token, (i + 1).toString(), shortcutMalam[i].toString());
+          }
+          relayValue = shortcutMalam;
+        });
+        break;
+      case "pergi":
+        setState(() {
+          for (var i = 0; i < shortcutPergi.length; i++) {
+            setStateRelay(
+                token, (i + 1).toString(), shortcutPergi[i].toString());
+          }
+          relayValue = shortcutPergi;
+        });
+        break;
+      default:
+        debugPrint("Wrong shortcut");
+    }
+  }
+
+  getStatus(String token) async {
+    var res = await session.post("https://iot.tigamas.com/api/app/action",
+        jsonEncode(<String, String>{"action": "getStatus", "token": token}));
+    if (res['session']) {
+      setState(() {
+        relayValue = res['dataValue'].cast<int>();
+        relayName = res['dataName'].cast<String>();
+        // print(res['dataIcon'].cast<String>());
+        relayIcon = res['dataIcon'].cast<String>();
+
+        statusDeviceOnline = int.parse(res['online']);
+        statusPesanMasuk = int.parse(res['pesanTerakhirAdmin']);
+
+        if (res['shortcutSiang'].length == 8) {
+          shortcutSiang = res['shortcutSiang'].cast<int>();
+        }
+        if (res['shortcutMalam'].length == 8) {
+          shortcutMalam = res['shortcutMalam'].cast<int>();
+        }
+        if (res['shortcutPergi'].length == 8) {
+          shortcutPergi = res['shortcutPergi'].cast<int>();
+        }
+      });
+    } else {
+      // Re login
+      goBackLogin();
+    }
+    // return response.body;
+    return jsonEncode(res);
+  }
+
+  setStateRelay(String token, String relay, String state) async {
+    var res = await session.post(
+        "https://iot.tigamas.com/api/app/action",
+        jsonEncode(<String, String>{
+          "action": "setStatusRelay",
+          "relay": relay,
+          "token": token,
+          "state": state
+        }));
+    // debugPrint(jsonEncode(res));
+    if (!res['session']) {
+      goBackLogin();
+    }
+    // return response.body;
+    return jsonEncode(res);
+  }
+
+  void goBackLogin() async {
+    String token = box.read('token').toString();
+    var res = await session.post("https://iot.tigamas.com/api/app/action",
+        jsonEncode(<String, String>{"action": "logout", "token": token}));
+    await box.remove('token');
+    Restart.restartApp();
+    // Navigator.push(
+    //   context,
+    //   MaterialPageRoute(builder: (context) => MyApp()),
+    // );
+  }
+
   @override
   void initState() {
     super.initState();
     setState(() {
+      token = box.read('token').toString();
       userName = box.read('nama').toString();
     });
+    getStatus(token);
   }
 
   @override
   Widget build(BuildContext context) {
-    String token = box.read('token').toString();
+    token = box.read('token').toString();
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
-          // gradient: LinearGradient(
-          //   colors: [Colors.deepOrange, Colors.yellow],
-          //   stops: [0.0, 0.7],
-          // ),
           image: DecorationImage(
             image: AssetImage("assets/imagesv2/backgorund.png"),
             fit: BoxFit.cover,
@@ -126,15 +224,29 @@ class _Dashboardv8 extends State<Dashboardv8> {
                     icon: Image.asset('assets/imagesv2/mail ' +
                         (statusPesanMasuk == 1 ? 'kuning' : 'putih') +
                         '.png'),
-                    onPressed: null,
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const Chat()),
+                      );
+                    },
                   ),
                   IconButton(
                     icon: Image.asset('assets/imagesv2/setting.png'),
-                    onPressed: null,
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const Setting()),
+                      );
+                    },
                   ),
                   IconButton(
                     icon: Image.asset('assets/imagesv2/keluar.png'),
-                    onPressed: null,
+                    onPressed: () {
+                      // Log Out
+                      goBackLogin();
+                    },
                   ),
                 ],
               ),
@@ -153,12 +265,14 @@ class _Dashboardv8 extends State<Dashboardv8> {
                       child: TextButton(
                           onPressed: () {
                             setState(() {
+                              box.write('mode', 3);
                               if (btnValShortcut[0] == 0) {
                                 btnValShortcut[0] = 1;
                                 btnValShortcut[1] = 0;
                                 btnValShortcut[2] = 0;
                               }
                             });
+                            shortcutRelay("pergi");
                           },
                           child: Column(
                             children: [
@@ -179,12 +293,14 @@ class _Dashboardv8 extends State<Dashboardv8> {
                       child: TextButton(
                           onPressed: () {
                             setState(() {
+                              box.write('mode', 1);
                               if (btnValShortcut[1] == 0) {
                                 btnValShortcut[0] = 0;
                                 btnValShortcut[1] = 1;
                                 btnValShortcut[2] = 0;
                               }
                             });
+                            shortcutRelay("siang");
                           },
                           child: Column(
                             children: [
@@ -205,12 +321,14 @@ class _Dashboardv8 extends State<Dashboardv8> {
                       child: TextButton(
                           onPressed: () {
                             setState(() {
+                              box.write('mode', 2);
                               if (btnValShortcut[2] == 0) {
                                 btnValShortcut[0] = 0;
                                 btnValShortcut[1] = 0;
                                 btnValShortcut[2] = 1;
                               }
                             });
+                            shortcutRelay("malam");
                           },
                           child: Column(
                             children: [
@@ -246,6 +364,11 @@ class _Dashboardv8 extends State<Dashboardv8> {
                               onPressed: () {
                                 setState(() {
                                   relayValue[0] = relayValue[0] == 1 ? 0 : 1;
+                                  btnValShortcut[0] = 0;
+                                  btnValShortcut[1] = 0;
+                                  btnValShortcut[2] = 0;
+                                  setStateRelay(
+                                      token, "1", relayValue[0].toString());
                                 });
                               },
                               child: Stack(
@@ -279,6 +402,11 @@ class _Dashboardv8 extends State<Dashboardv8> {
                               onPressed: () {
                                 setState(() {
                                   relayValue[1] = relayValue[1] == 1 ? 0 : 1;
+                                  btnValShortcut[0] = 0;
+                                  btnValShortcut[1] = 0;
+                                  btnValShortcut[2] = 0;
+                                  setStateRelay(
+                                      token, "2", relayValue[1].toString());
                                 });
                               },
                               child: Stack(
@@ -312,6 +440,11 @@ class _Dashboardv8 extends State<Dashboardv8> {
                               onPressed: () {
                                 setState(() {
                                   relayValue[2] = relayValue[2] == 1 ? 0 : 1;
+                                  btnValShortcut[0] = 0;
+                                  btnValShortcut[1] = 0;
+                                  btnValShortcut[2] = 0;
+                                  setStateRelay(
+                                      token, "3", relayValue[2].toString());
                                 });
                               },
                               child: Stack(
@@ -350,6 +483,11 @@ class _Dashboardv8 extends State<Dashboardv8> {
                               onPressed: () {
                                 setState(() {
                                   relayValue[3] = relayValue[3] == 1 ? 0 : 1;
+                                  btnValShortcut[0] = 0;
+                                  btnValShortcut[1] = 0;
+                                  btnValShortcut[2] = 0;
+                                  setStateRelay(
+                                      token, "4", relayValue[3].toString());
                                 });
                               },
                               child: Stack(
@@ -380,7 +518,14 @@ class _Dashboardv8 extends State<Dashboardv8> {
                                   ]))),
                       Expanded(
                           child: TextButton(
-                              onPressed: () {},
+                              onPressed: () async {
+                                await LaunchApp.openApp(
+                                    androidPackageName: 'com.mobile.myeye',
+                                    iosUrlScheme: 'xmeye://',
+                                    appStoreLink:
+                                        'itms-apps://itunes.apple.com/us/app/xmeye/id884006786',
+                                    openStore: false);
+                              },
                               child: Stack(
                                   alignment: Alignment.bottomCenter,
                                   children: <Widget>[
@@ -404,6 +549,11 @@ class _Dashboardv8 extends State<Dashboardv8> {
                               onPressed: () {
                                 setState(() {
                                   relayValue[4] = relayValue[4] == 1 ? 0 : 1;
+                                  btnValShortcut[0] = 0;
+                                  btnValShortcut[1] = 0;
+                                  btnValShortcut[2] = 0;
+                                  setStateRelay(
+                                      token, "5", relayValue[4].toString());
                                 });
                               },
                               child: Stack(
@@ -442,6 +592,11 @@ class _Dashboardv8 extends State<Dashboardv8> {
                               onPressed: () {
                                 setState(() {
                                   relayValue[5] = relayValue[5] == 1 ? 0 : 1;
+                                  btnValShortcut[0] = 0;
+                                  btnValShortcut[1] = 0;
+                                  btnValShortcut[2] = 0;
+                                  setStateRelay(
+                                      token, "6", relayValue[5].toString());
                                 });
                               },
                               child: Stack(
@@ -475,6 +630,11 @@ class _Dashboardv8 extends State<Dashboardv8> {
                               onPressed: () {
                                 setState(() {
                                   relayValue[6] = relayValue[6] == 1 ? 0 : 1;
+                                  btnValShortcut[0] = 0;
+                                  btnValShortcut[1] = 0;
+                                  btnValShortcut[2] = 0;
+                                  setStateRelay(
+                                      token, "7", relayValue[6].toString());
                                 });
                               },
                               child: Stack(
@@ -508,6 +668,11 @@ class _Dashboardv8 extends State<Dashboardv8> {
                               onPressed: () {
                                 setState(() {
                                   relayValue[7] = relayValue[7] == 1 ? 0 : 1;
+                                  btnValShortcut[0] = 0;
+                                  btnValShortcut[1] = 0;
+                                  btnValShortcut[2] = 0;
+                                  setStateRelay(
+                                      token, "8", relayValue[7].toString());
                                 });
                               },
                               child: Stack(

@@ -119,6 +119,14 @@ flutter:
     - assets/imagesv2/tv putih.png
     - assets/imagesv2/wifi kuning.png
     - assets/imagesv2/wifi putih.png
+    - assets/imagesv2/lampu kuning.png
+    - assets/imagesv2/lampu putih.png
+    - assets/imagesv2/lamp kuning.png
+    - assets/imagesv2/lamp putih.png
+    - assets/imagesv2/air_conditioner kuning.png
+    - assets/imagesv2/air_conditioner putih.png
+    - assets/imagesv2/lock kuning.png
+    - assets/imagesv2/lock putih.png
     - assets/imagesv2/logo graha mas.png
   #   - images/a_dot_ham.jpeg
   fonts:

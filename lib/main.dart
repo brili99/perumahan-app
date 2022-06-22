@@ -202,8 +202,8 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     primary: Color.fromARGB(255, 216, 216, 216),
-                    shape: new RoundedRectangleBorder(
-                      borderRadius: new BorderRadius.circular(12.0),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12.0),
                     ),
                   ),
                   child: const Padding(
@@ -231,7 +231,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                   ),
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      primary: Color.fromARGB(255, 216, 216, 216),
+                      primary: const Color.fromARGB(255, 216, 216, 216),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12.0),
                       ),
