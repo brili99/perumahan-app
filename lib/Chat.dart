@@ -254,11 +254,12 @@ class _Chat extends State<Chat> {
                       SizedBox(
                         height: 6,
                       ),
-                      Text(
-                        "Online",
-                        style: TextStyle(
-                            color: Colors.grey.shade600, fontSize: 13),
-                      ),
+                      // Text(
+                      //   // "Online",
+                      //   " ",
+                      //   style: TextStyle(
+                      //       color: Colors.grey.shade600, fontSize: 13),
+                      // ),
                     ],
                   ),
                 ),

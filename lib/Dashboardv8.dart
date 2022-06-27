@@ -112,6 +112,14 @@ class _Dashboardv8 extends State<Dashboardv8> {
           relayValue = shortcutPergi;
         });
         break;
+      case "matikan":
+        setState(() {
+          for (var i = 0; i < 8; i++) {
+            setStateRelay(token, (i + 1).toString(), "0");
+          }
+          relayValue = [0, 0, 0, 0, 0, 0, 0, 0];
+        });
+        break;
       default:
         debugPrint("Wrong shortcut");
     }
@@ -270,9 +278,14 @@ class _Dashboardv8 extends State<Dashboardv8> {
                                 btnValShortcut[0] = 1;
                                 btnValShortcut[1] = 0;
                                 btnValShortcut[2] = 0;
+                                shortcutRelay("pergi");
+                              } else {
+                                btnValShortcut[0] = 0;
+                                btnValShortcut[1] = 0;
+                                btnValShortcut[2] = 0;
+                                shortcutRelay("matikan");
                               }
                             });
-                            shortcutRelay("pergi");
                           },
                           child: Column(
                             children: [
@@ -298,9 +311,14 @@ class _Dashboardv8 extends State<Dashboardv8> {
                                 btnValShortcut[0] = 0;
                                 btnValShortcut[1] = 1;
                                 btnValShortcut[2] = 0;
+                                shortcutRelay("siang");
+                              } else {
+                                btnValShortcut[0] = 0;
+                                btnValShortcut[1] = 0;
+                                btnValShortcut[2] = 0;
+                                shortcutRelay("matikan");
                               }
                             });
-                            shortcutRelay("siang");
                           },
                           child: Column(
                             children: [
@@ -326,9 +344,15 @@ class _Dashboardv8 extends State<Dashboardv8> {
                                 btnValShortcut[0] = 0;
                                 btnValShortcut[1] = 0;
                                 btnValShortcut[2] = 1;
+                                shortcutRelay("malam");
+                              } else {
+                                box.write('mode', 0);
+                                btnValShortcut[0] = 0;
+                                btnValShortcut[1] = 0;
+                                btnValShortcut[2] = 0;
+                                shortcutRelay("matikan");
                               }
                             });
-                            shortcutRelay("malam");
                           },
                           child: Column(
                             children: [
