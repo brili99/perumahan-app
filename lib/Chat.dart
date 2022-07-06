@@ -225,12 +225,12 @@ class _Chat extends State<Chat> {
                   onPressed: () {
                     Navigator.pop(context);
                   },
-                  icon: Icon(
+                  icon: const Icon(
                     Icons.arrow_back,
                     color: Colors.black,
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 2,
                 ),
                 // CircleAvatar(
@@ -238,14 +238,14 @@ class _Chat extends State<Chat> {
                 //       "https://randomuser.me/api/portraits/men/5.jpg"),
                 //   maxRadius: 20,
                 // ),
-                SizedBox(
+                const SizedBox(
                   width: 12,
                 ),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
+                    children: const <Widget>[
                       Text(
                         "Admin",
                         style: TextStyle(

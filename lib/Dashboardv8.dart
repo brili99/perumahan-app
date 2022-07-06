@@ -52,6 +52,7 @@ class _Dashboardv8 extends State<Dashboardv8> {
   Session session = Session();
   String token = "";
   String userName = "john";
+  String lastSyncTime = "";
   int statusDeviceOnline = 1;
   int statusPesanMasuk = 1;
   List<int> btnValShortcut = [0, 0, 0];
@@ -130,12 +131,13 @@ class _Dashboardv8 extends State<Dashboardv8> {
         jsonEncode(<String, String>{"action": "getStatus", "token": token}));
     if (res['session']) {
       setState(() {
+        lastSyncTime = res['lastDataChange'];
         relayValue = res['dataValue'].cast<int>();
         relayName = res['dataName'].cast<String>();
         // print(res['dataIcon'].cast<String>());
         relayIcon = res['dataIcon'].cast<String>();
 
-        statusDeviceOnline = int.parse(res['online']);
+        // statusDeviceOnline = int.parse(res['online']);
         statusPesanMasuk = int.parse(res['pesanTerakhirAdmin']);
 
         if (res['shortcutSiang'].length == 8) {
@@ -154,6 +156,30 @@ class _Dashboardv8 extends State<Dashboardv8> {
     }
     // return response.body;
     return jsonEncode(res);
+  }
+
+  getSyncDataWithServer(String token) async {
+    var res = await session.post(
+        "https://iot.tigamas.com/api/app/action",
+        jsonEncode(<String, String>{
+          "action": "getSyncDataWithServer",
+          "token": token
+        }));
+    if (res['session']) {
+      if (res['msg'] == "success") {
+        setState(() {
+          statusDeviceOnline = int.parse(res['online']);
+        });
+        if (lastSyncTime != res['data']) {
+          getStatus(token);
+          // lastSyncTime = res['data'];
+          debugPrint("Data changed, sync with server");
+        }
+      }
+    } else {
+      // Re login
+      goBackLogin();
+    }
   }
 
   setStateRelay(String token, String relay, String state) async {
@@ -193,6 +219,10 @@ class _Dashboardv8 extends State<Dashboardv8> {
       userName = box.read('nama').toString();
     });
     getStatus(token);
+
+    Timer.periodic(new Duration(seconds: 1), (timer) {
+      getSyncDataWithServer(token);
+    });
   }
 
   @override
